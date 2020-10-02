@@ -2,7 +2,7 @@
 const express = require("express");
 const router = express.Router();
 
-const DUMMY_VALUE = [
+const DUMMY_Stack = [
   {
     id: 1,
     stackName: "test stack",
@@ -23,24 +23,24 @@ const DUMMY_VALUE = [
   },
 ];
 
-router.get("/user/:user", (req, res, next) => {
-  const userId = req.params.user;
-  console.log("GET request in Card management for stack:", stackId);
-  const returnUserData = DUMMY_VALUE.find((u) => {
-    return u.createdBy === userId;
-  });
-  console.log(returnUserData);
-  //! later integrate error messages
-  res.json({ returnData });
-});
+// router.get("/user/:user", (req, res, next) => {
+//   const userId = req.params.user;
+//   console.log("GET request in Card management for stack:", stackId);
+//   const returnUserData = DUMMY_VALUE.find((u) => {
+//     return u.createdBy === userId;
+//   });
+//   console.log(returnUserData);
+//   //! later integrate error messages
+//   res.json({ returnData });
+// });
 
 router.get("/:No", (req, res, next) => {
   const stackId = req.params.No;
-  console.log("GET request in Card management for stack:", stackId);
-  const returnStack = DUMMY_VALUE[stackId];
+  console.log("GET request in Card management for stack at position:", stackId);
+  const returnStack = DUMMY_Stack[stackId];
   console.log(returnStack);
   //! later integrate error messages
-  res.json({ returnStack });
+  res.json(returnStack);
 });
 
 module.exports = router;

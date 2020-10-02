@@ -17,15 +17,15 @@ const DUMMY_USER_LIST = [
   },
 ];
 
-router.get("/user/:user", (req, res, next) => {
-  const userId = req.params.user;
-  console.log("GET request in Card management for stack:", stackId);
-  const returnUserData = DUMMY_VALUE.find((u) => {
+router.get("/userData/:user", (req, res, next) => {
+  const userId = req.params.userData;
+  console.log("GET request in Card management for user:", userId);
+  const returnUserData = DUMMY_USER_LIST.find((u) => {
     return u.createdBy === userId;
   });
   console.log(returnUserData);
   //! later integrate error messages
-  res.json({ returnData });
+  res.json(returnUserData);
 });
 
 module.exports = router;
