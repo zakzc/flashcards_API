@@ -10,4 +10,8 @@ router.get("/:No", cardControl.getStackByID);
 
 router.post("/add", cardControl.addStack);
 
+router.patch("/:No", cardControl.updateStack);
+
+router.delete("/No", cardControl.deleteStack);
+
 module.exports = router;

@@ -54,8 +54,29 @@ function addStack(req, res, next) {
   console.log("Received post, added", newStackCreated);
   res.status(201).json({ added: newStackCreated });
 }
+
+function updateStack(req, res, next) {
+  const { id, stackName, createdBy, cards } = req.body;
+  const stackNo = req.params.No;
+  const updatedStack = { ...DUMMY_Stack.find((u) => u.id === stackNo) };
+  // creating a full version of the stack data before updating
+  const indexOfChange = DUMMY_Stack.find((u) => u.id === stackNo);
+  updatedStack.stackName = stackName;
+  updatedStack.createdBy = createdBy;
+  updatedStack.cards = cards;
+  // now the actual update
+  DUMMY_Stack[stackNo] = updatedStack;
+  console.log("Updated: ", updatedStack);
+  res.status(200).json({ updated: updatedStack });
+}
+
+function deleteStack(req, res, next) {}
+
 //TODO don't forget to add, later, the function that adds the
 //TODO unique id to the list of stacks owned by users in the users json
 
+// export of CRUD functions
 exports.getStackByID = getStackByID;
 exports.addStack = addStack;
+exports.updateStack = updateStack;
+exports.deleteStack = deleteStack;
