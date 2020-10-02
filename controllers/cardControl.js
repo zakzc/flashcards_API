@@ -1,4 +1,5 @@
 const { get } = require("got");
+const { v4: uuidv4 } = require("uuid");
 // model imports
 const HttpError = require("../models/http_error");
 
@@ -44,7 +45,7 @@ function addStack(req, res, next) {
   console.log(req.body);
   const { id, stackName, createdBy, cards } = req.body;
   const newStackCreated = {
-    id,
+    id: uuidv4(),
     stackName,
     createdBy,
     cards,
@@ -53,6 +54,8 @@ function addStack(req, res, next) {
   console.log("Received post, added", newStackCreated);
   res.status(201).json({ added: newStackCreated });
 }
+//TODO don't forget to add, later, the function that adds the
+//TODO unique id to the list of stacks owned by users in the users json
 
 exports.getStackByID = getStackByID;
 exports.addStack = addStack;

@@ -1,3 +1,5 @@
+// package import
+const { v4: uuidv4 } = require("uuid");
 // model imports
 const HttpError = require("../models/http_error");
 
@@ -33,4 +35,21 @@ function getUserById(req, res, next) {
   }
 }
 
+function addUser(req, res, next) {
+  console.log(req.body);
+  const { userStacks, firstName, lastName } = req.body;
+  const newUserCreated = {
+    id: uuidv4(),
+    userStacks,
+    firstName,
+    lastName,
+  };
+  DUMMY_USER_LIST.push(newUserCreated);
+  console.log("Received post, added", newUserCreated);
+  res.status(201).json({ added: newUserCreated });
+}
+//TODO don't forget to add, later, the function that adds the
+//TODO unique id to the list of stacks owned by users in the users json
+
 exports.getUserById = getUserById;
+exports.addUser = addUser;

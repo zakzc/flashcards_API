@@ -4,7 +4,7 @@ const bodyParser = require("body-parser");
 const app = express();
 // file imports
 const cardMan = require("./routes/cardMan");
-const users = require("./routes/users");
+const userMan = require("./routes/userMan");
 
 // app.use(bodyParser.urlencoded({ extended: false }));
 
@@ -12,7 +12,7 @@ app.use(bodyParser.json());
 
 app.use("/cardApi", cardMan);
 
-app.use("/userApi", users);
+app.use("/userApi", userMan);
 
 // Error handling
 app.use((error, req, res, next) => {
