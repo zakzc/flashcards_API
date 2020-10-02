@@ -2,6 +2,8 @@ const { get } = require("got");
 // model imports
 const HttpError = require("../models/http_error");
 
+const debugStackAPI = true;
+
 const DUMMY_Stack = [
   {
     id: "s000",
@@ -25,9 +27,10 @@ const DUMMY_Stack = [
 
 function getStackByID(req, res, next) {
   const stackId = req.params.No;
-  console.log("GET request in Card management for stack:", stackId);
+  if (debugStackAPI) {
+    console.log("GET request in Card management for stack:", stackId);
+  }
   const returnStack = DUMMY_Stack.find((c) => {
-    console.log("check:", stackId, typeof stackId, c.id);
     return c.id === stackId;
   });
   if (!returnStack) {
@@ -37,4 +40,19 @@ function getStackByID(req, res, next) {
   }
 }
 
+function addStack(req, res, next) {
+  console.log(req.body);
+  const { id, stackName, createdBy, cards } = req.body;
+  const newStackCreated = {
+    id,
+    stackName,
+    createdBy,
+    cards,
+  };
+  DUMMY_Stack.push(newStackCreated);
+  console.log("Received post, added", newStackCreated);
+  res.status(201).json({ added: newStackCreated });
+}
+
 exports.getStackByID = getStackByID;
+exports.addStack = addStack;
