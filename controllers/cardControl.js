@@ -5,7 +5,7 @@ const HttpError = require("../models/http_error");
 
 const debugStackAPI = true;
 
-const DUMMY_Stack = [
+let DUMMY_Stack = [
   {
     id: "s000",
     stackName: "test stack",
@@ -52,25 +52,32 @@ function addStack(req, res, next) {
   };
   DUMMY_Stack.push(newStackCreated);
   console.log("Received post, added", newStackCreated);
-  res.status(201).json({ added: newStackCreated });
+  res.status(201).json({ Added: newStackCreated });
 }
 
+//! Further double check if the update is actually working
 function updateStack(req, res, next) {
   const { id, stackName, createdBy, cards } = req.body;
   const stackNo = req.params.No;
   const updatedStack = { ...DUMMY_Stack.find((u) => u.id === stackNo) };
   // creating a full version of the stack data before updating
   const indexOfChange = DUMMY_Stack.find((u) => u.id === stackNo);
+  updatedStack.id = stackNo;
   updatedStack.stackName = stackName;
   updatedStack.createdBy = createdBy;
   updatedStack.cards = cards;
   // now the actual update
   DUMMY_Stack[stackNo] = updatedStack;
-  console.log("Updated: ", updatedStack);
-  res.status(200).json({ updated: updatedStack });
+  console.log("Updated: ", DUMMY_Stack);
+  res.status(200).json({ Updated: updatedStack });
 }
 
-function deleteStack(req, res, next) {}
+function deleteStack(req, res, next) {
+  const itemToDelete = req.params.No;
+  DUMMY_Stack = DUMMY_Stack.filter((f) => f.id !== itemToDelete);
+  console.log("Deleted item: ", itemToDelete);
+  res.status(200).json({ Deleted: itemToDelete });
+}
 
 //TODO don't forget to add, later, the function that adds the
 //TODO unique id to the list of stacks owned by users in the users json
