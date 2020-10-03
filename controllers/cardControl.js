@@ -1,5 +1,6 @@
 const { get } = require("got");
 const { v4: uuidv4 } = require("uuid");
+const { validationResult } = require("express-validator");
 // model imports
 const HttpError = require("../models/http_error");
 
@@ -44,6 +45,10 @@ function getStackByID(req, res, next) {
 function addStack(req, res, next) {
   console.log(req.body);
   const { stackName, createdBy, cards } = req.body;
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    throw new HttpError("error on data validation for add stack request", 422);
+  }
   const newStackCreated = {
     id: uuidv4(),
     stackName,
@@ -55,10 +60,15 @@ function addStack(req, res, next) {
   res.status(201).json({ Added: newStackCreated });
 }
 
-//! Further double check if the update is actually working
 function updateStack(req, res, next) {
   const { stackName, createdBy, cards } = req.body;
   const stackNo = req.params.No;
+  // data validation
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    throw new HttpError("error on data validation for update request", 422);
+  }
+  /// finding element to update
   const updatedStack = { ...DUMMY_Stack.find((u) => u.id === stackNo) };
   // creating a full version of the stack data before updating
   const indexOfChange = DUMMY_Stack.find((u) => u.id === stackNo);
@@ -74,6 +84,9 @@ function updateStack(req, res, next) {
 
 function deleteStack(req, res, next) {
   const itemToDelete = req.params.No;
+  if (!DUMMY_Stack.find((f) => f.id === itemToDelete)) {
+    throw new HttpError("No item found for deletion", 401);
+  }
   DUMMY_Stack = DUMMY_Stack.filter((f) => f.id !== itemToDelete);
   console.log("Deleted item: ", itemToDelete);
   res.status(200).json({ Deleted: itemToDelete });

@@ -2,6 +2,7 @@
 const { v4: uuidv4 } = require("uuid");
 // model imports
 const HttpError = require("../models/http_error");
+const { validationResult } = require("express-validator");
 
 const debugUserAPI = true;
 
@@ -39,7 +40,7 @@ function getUserById(req, res, next) {
   }
 }
 
-// * previous implementation
+// * To be changed to: getUserStackNumbers
 // function addUser(req, res, next) {
 //   console.log(req.body);
 //   const { userStacks, firstName, lastName } = req.body;
@@ -59,14 +60,24 @@ function getUserById(req, res, next) {
 
 function signUp(req, res, next) {
   console.log("Sign up function");
-  const { userEmail, password, fistName, lastName } = req.body;
+  const { userEmail, password, firstName, lastName } = req.body;
+  // data validation
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    throw new HttpError("error on data validation for user sign up", 422);
+  }
+  // Check for existing users
+  const userExists = DUMMY_USER_LIST.find((v) => v.userEmail === userEmail);
+  if (userExists) {
+    throw new HttpError("User or email already exists", 401);
+  }
   // on Sign UP the user has no stacks, so it's hard coded in the const
   const createdNewUser = {
     id: uuidv4(),
-    userEmail,
-    password,
+    userEmail: userEmail,
+    password: password,
     userStacks: [],
-    firstName: fistName,
+    firstName: firstName,
     lastName: lastName,
   };
   console.log("created: ", createdNewUser);
@@ -78,6 +89,10 @@ function signUp(req, res, next) {
 function logIn(req, res, next) {
   console.log("Log in function");
   const { userEmail, password } = req.body;
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    throw new HttpError("error on data validation for user log in", 422);
+  }
   const userListed = DUMMY_USER_LIST.find((u) => u.userEmail === userEmail);
   if (!userListed || userListed.password !== password) {
     throw new HttpError("User not identified", 401);

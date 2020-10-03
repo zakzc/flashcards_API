@@ -1,6 +1,7 @@
 // Library import
 const express = require("express");
 const router = express.Router();
+const { check } = require("express-validator");
 // model imports
 // const HttpError = require("../models/http_error");
 // controller imports
@@ -10,8 +11,21 @@ router.get("/:user", userControl.getUserById);
 
 // router.post("/add", userControl.addUser);
 
-router.post("/signUp", userControl.signUp);
+router.post(
+  "/signUp",
+  [
+    check("userEmail").not().isEmpty(),
+    check("password").not().isEmpty(),
+    check("firstName").isLength({ min: 2 }),
+    check("lastName").isLength({ min: 2 }),
+  ],
+  userControl.signUp
+);
 
-router.post("/logIn", userControl.logIn);
+router.post(
+  "/logIn",
+  [check("userEmail").not().isEmpty(), check("password").not().isEmpty()],
+  userControl.logIn
+);
 
 module.exports = router;
