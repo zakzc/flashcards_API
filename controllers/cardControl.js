@@ -43,7 +43,7 @@ function getStackByID(req, res, next) {
 
 function addStack(req, res, next) {
   console.log(req.body);
-  const { id, stackName, createdBy, cards } = req.body;
+  const { stackName, createdBy, cards } = req.body;
   const newStackCreated = {
     id: uuidv4(),
     stackName,
@@ -57,7 +57,7 @@ function addStack(req, res, next) {
 
 //! Further double check if the update is actually working
 function updateStack(req, res, next) {
-  const { id, stackName, createdBy, cards } = req.body;
+  const { stackName, createdBy, cards } = req.body;
   const stackNo = req.params.No;
   const updatedStack = { ...DUMMY_Stack.find((u) => u.id === stackNo) };
   // creating a full version of the stack data before updating
