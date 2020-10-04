@@ -2,6 +2,8 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const app = express();
+// DB module
+const mongoose = require("mongoose");
 // file imports
 const cardMan = require("./routes/cardMan");
 const userMan = require("./routes/userMan");
@@ -31,4 +33,13 @@ app.use((error, req, res, next) => {
     .json({ message: error.message || "unknown error occurred" });
 });
 
-app.listen(5000);
+mongoose
+  .connect(
+    "mongodb+srv://zak:XG4lGCacJqq6cFKH@cluster0.ybfne.gcp.mongodb.net/<Flashcards>?retryWrites=true&w=majority"
+  )
+  .then(() => {
+    app.listen(5000);
+  })
+  .catch((err) => {
+    console.log("Connection error: ", err);
+  });

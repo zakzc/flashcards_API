@@ -3,8 +3,7 @@ const { v4: uuidv4 } = require("uuid");
 const { validationResult } = require("express-validator");
 // model imports
 const HttpError = require("../models/http_error");
-
-const debugStackAPI = true;
+const SetOfCards = require("../models/cardsModel");
 
 let DUMMY_Stack = [
   {
@@ -42,22 +41,40 @@ function getStackByID(req, res, next) {
   }
 }
 
-function addStack(req, res, next) {
+async function addStack(req, res, next) {
   console.log(req.body);
   const { stackName, createdBy, cards } = req.body;
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     throw new HttpError("error on data validation for add stack request", 422);
   }
-  const newStackCreated = {
-    id: uuidv4(),
+  // * previous API only implementation
+  //   const newStackCreated = {
+  //     id: uuidv4(),
+  //     stackName,
+  //     createdBy,
+  //     cards,
+  //   };
+  // with saving to local dummy variable
+  //   DUMMY_Stack.push(newStackCreated);
+  //   console.log("Received post, added", newStackCreated);
+  //   res.status(201).json({ Added: newStackCreated });
+  // }
+  // * implementation with Mongoose
+  const newStackCreated = new SetOfCards({
     stackName,
     createdBy,
     cards,
-  };
-  DUMMY_Stack.push(newStackCreated);
-  console.log("Received post, added", newStackCreated);
-  res.status(201).json({ Added: newStackCreated });
+  });
+
+  try {
+    await newStackCreated.save();
+  } catch (err) {
+    const error = new HttpError("Error on adding new stack", 500);
+    return next(error);
+  }
+
+  res.status(201).json({ stack: newStackCreated });
 }
 
 function updateStack(req, res, next) {
