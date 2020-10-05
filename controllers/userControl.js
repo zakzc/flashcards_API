@@ -62,7 +62,6 @@ function getUserById(req, res, next) {
 
 async function signUp(req, res, next) {
   console.log("Sign up function");
-  const { userEmail, password, firstName, lastName, userStacks } = req.body;
   ////* Sequence of checks ////
   // data validation
   const errors = validationResult(req);
@@ -72,6 +71,8 @@ async function signUp(req, res, next) {
       new HttpError("error on data validation for user sign up", 422)
     );
   }
+  // variable assignment from req
+  const { userEmail, password, firstName, lastName, userStacks } = req.body;
   /// is user listed already?
   let userExists;
   try {
@@ -97,13 +98,14 @@ async function signUp(req, res, next) {
   console.log("created: ", newUserToCreate);
   // Now save it
   try {
-    await createdNewUser.save();
+    await newUserToCreate.save();
+    console.log("Sign up: ", newUserToCreate);
   } catch (err) {
     const error = new HttpError("Error on user sign up", 500);
     return next(error);
   }
-  console.log("Added user: ", createdNewUser);
-  res.status(201).json({ user: createdNewUser.toObejct({ getters: true }) });
+  // and return
+  res.status(201).json({ user: newUserToCreate.toObject({ getters: true }) });
 }
 
 function logIn(req, res, next) {
