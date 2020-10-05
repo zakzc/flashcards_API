@@ -25,20 +25,18 @@ let DUMMY_USER_LIST = [
   },
 ];
 
-// To be updated
-function getUserById(req, res, next) {
-  const userId = req.params.user;
-  if (debugUserAPI) {
-    console.log("GET request in User api for user:", userId);
+// get all users
+async function getUsers(req, res, next) {
+  let allUsers;
+  try {
+    allUsers = await User.find({}, "-password");
+  } catch (err) {
+    const error = new HttpError("No users found", 500);
+    return next(error);
   }
-  const returnUserData = DUMMY_USER_LIST.find((u) => {
-    return u.userId === userId;
+  res.json({
+    listOfUsers: allUsers.map((all) => all.toObject({ getters: true })),
   });
-  if (!returnUserData) {
-    throw new HttpError("no data found on User API", 404);
-  } else {
-    res.json(returnUserData);
-  }
 }
 
 // * To be changed to: getUserStackNumbers
@@ -140,7 +138,8 @@ async function logIn(req, res, next) {
   res.json({ message: "User: " + userEmail + " logged in" });
 }
 
-exports.getUserById = getUserById;
+// exports.getUserById = getUserById;
+exports.getUsers = getUsers;
 // exports.addUser = addUser;
 exports.signUp = signUp;
 exports.logIn = logIn;

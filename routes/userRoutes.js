@@ -7,7 +7,9 @@ const { check } = require("express-validator");
 // controller imports
 const userControl = require("../controllers/userControl");
 
-router.get("/:user", userControl.getUserById);
+router.get("/", userControl.getUsers);
+
+// router.get("/:user", userControl.getUserById);
 
 // router.post("/add", userControl.addUser);
 
