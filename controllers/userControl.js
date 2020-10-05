@@ -6,8 +6,6 @@ const { validationResult } = require("express-validator");
 const HttpError = require("../models/http_error");
 const User = require("../models/userModel");
 
-const debugUserAPI = true;
-
 let DUMMY_USER_LIST = [
   {
     userId: "jStein",
@@ -27,6 +25,7 @@ let DUMMY_USER_LIST = [
   },
 ];
 
+// To be updated
 function getUserById(req, res, next) {
   const userId = req.params.user;
   if (debugUserAPI) {
@@ -74,15 +73,15 @@ async function signUp(req, res, next) {
   // variable assignment from req
   const { userEmail, password, firstName, lastName, userStacks } = req.body;
   /// is user listed already?
-  let userExists;
+  let doesUserExist;
   try {
-    userExists = await User.findOne({ userEmail: userEmail });
+    doesUserExist = await User.findOne({ userEmail: userEmail });
   } catch (err) {
     const error = new HttpError("Problems on user sign up", 500);
     return next(error);
   }
   // does it already exist?
-  if (userExists) {
+  if (doesUserExist) {
     const error = new HttpError("This user exists already", 422);
     return next(error);
   }
@@ -108,18 +107,37 @@ async function signUp(req, res, next) {
   res.status(201).json({ user: newUserToCreate.toObject({ getters: true }) });
 }
 
-function logIn(req, res, next) {
+async function logIn(req, res, next) {
   console.log("Log in function");
+  // get data from req
   const { userEmail, password } = req.body;
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    throw new HttpError("error on data validation for user log in", 422);
+  let userExists;
+  try {
+    userExists = await User.findOne({ userEmail: userEmail });
+  } catch (err) {
+    const error = new HttpError("Problems on user log in", 500);
+    return next(error);
   }
-  const userListed = DUMMY_USER_LIST.find((u) => u.userEmail === userEmail);
-  if (!userListed || userListed.password !== password) {
-    throw new HttpError("User not identified", 401);
+  // validate req
+  // const errors = validationResult(req);
+  // checks
+  // if (!errors.isEmpty()) {
+  //   const error = new HttpError(
+  //     "error on data validation for user log in",
+  //     422
+  //   );
+  //   return next(error);
+  // }
+  // previous
+  // const userListed = DUMMY_USER_LIST.find((u) => u.userEmail === userEmail);
+  if (!userExists || userExists.password !== password) {
+    const error = new HttpError(
+      "Sign up not possible: invalid credentials",
+      401
+    );
+    return next(error);
   }
-  res.json({ message: "User logged in" });
+  res.json({ message: "User: " + userEmail + " logged in" });
 }
 
 exports.getUserById = getUserById;
