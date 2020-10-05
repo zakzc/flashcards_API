@@ -1,12 +1,13 @@
 // package import
 const { v4: uuidv4 } = require("uuid");
+// validation
+const { validationResult } = require("express-validator");
 // model imports
 const HttpError = require("../models/http_error");
-const { validationResult } = require("express-validator");
 
 const debugUserAPI = true;
 
-const DUMMY_USER_LIST = [
+let DUMMY_USER_LIST = [
   {
     userId: "jStein",
     userEmail: "jStein@literary.com",

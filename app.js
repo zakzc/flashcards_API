@@ -5,8 +5,8 @@ const app = express();
 // DB module
 const mongoose = require("mongoose");
 // file imports
-const cardMan = require("./routes/cardMan");
-const userMan = require("./routes/userMan");
+const cardRoutes = require("./routes/cardRoutes");
+const userRoutes = require("./routes/userRoutes");
 // model imports
 const HttpError = require("./models/http_error");
 
@@ -14,9 +14,9 @@ const HttpError = require("./models/http_error");
 
 app.use(bodyParser.json());
 
-app.use("/cardApi", cardMan);
+app.use("/cardApi", cardRoutes);
 
-app.use("/userApi", userMan);
+app.use("/userApi", userRoutes);
 
 app.use((req, res, next) => {
   const error = new HttpError("Route not found", 404);
@@ -35,7 +35,8 @@ app.use((error, req, res, next) => {
 
 mongoose
   .connect(
-    "mongodb+srv://zak:XG4lGCacJqq6cFKH@cluster0.ybfne.gcp.mongodb.net/<Flashcards>?retryWrites=true&w=majority"
+    "mongodb+srv://zak:XG4lGCacJqq6cFKH@cluster0.ybfne.gcp.mongodb.net/<Flashcards>?authSource=admin?retryWrites=true&w=majority",
+    { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true }
   )
   .then(() => {
     app.listen(5000);
