@@ -116,7 +116,9 @@ async function updateStack(req, res, next) {
   // data validation
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    throw new HttpError("error on data validation for update request", 422);
+    return next(
+      new HttpError("error on data validation for update request", 422)
+    );
   }
   const { stackName, createdBy, cards } = req.body;
   const stackId = req.params.No;

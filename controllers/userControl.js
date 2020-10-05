@@ -4,6 +4,7 @@ const { v4: uuidv4 } = require("uuid");
 const { validationResult } = require("express-validator");
 // model imports
 const HttpError = require("../models/http_error");
+const User = require("../models/userModel");
 
 const debugUserAPI = true;
 
@@ -59,32 +60,50 @@ function getUserById(req, res, next) {
 //TODO don't forget to add, later, the function that adds the
 //TODO unique id to the list of stacks owned by users in the users json
 
-function signUp(req, res, next) {
+async function signUp(req, res, next) {
   console.log("Sign up function");
-  const { userEmail, password, firstName, lastName } = req.body;
+  const { userEmail, password, firstName, lastName, userStacks } = req.body;
+  ////* Sequence of checks ////
   // data validation
   const errors = validationResult(req);
+  // is pre-validation ok?
   if (!errors.isEmpty()) {
-    throw new HttpError("error on data validation for user sign up", 422);
+    return next(
+      new HttpError("error on data validation for user sign up", 422)
+    );
   }
-  // Check for existing users
-  const userExists = DUMMY_USER_LIST.find((v) => v.userEmail === userEmail);
+  /// is user listed already?
+  let userExists;
+  try {
+    userExists = await User.findOne({ userEmail: userEmail });
+  } catch (err) {
+    const error = new HttpError("Problems on user sign up", 500);
+    return next(error);
+  }
+  // does it already exist?
   if (userExists) {
-    throw new HttpError("User or email already exists", 401);
+    const error = new HttpError("This user exists already", 422);
+    return next(error);
   }
-  // on Sign UP the user has no stacks, so it's hard coded in the const
-  const createdNewUser = {
-    id: uuidv4(),
-    userEmail: userEmail,
-    password: password,
-    userStacks: [],
-    firstName: firstName,
-    lastName: lastName,
-  };
-  console.log("created: ", createdNewUser);
-  DUMMY_USER_LIST.push(createdNewUser);
+  ////* Makes and saves new user ///
+  // Make new user
+  const newUserToCreate = new User({
+    userEmail,
+    password,
+    firstName,
+    lastName,
+    userStacks,
+  });
+  console.log("created: ", newUserToCreate);
+  // Now save it
+  try {
+    await createdNewUser.save();
+  } catch (err) {
+    const error = new HttpError("Error on user sign up", 500);
+    return next(error);
+  }
   console.log("Added user: ", createdNewUser);
-  res.status(201).json({ user: createdNewUser });
+  res.status(201).json({ user: createdNewUser.toObejct({ getters: true }) });
 }
 
 function logIn(req, res, next) {

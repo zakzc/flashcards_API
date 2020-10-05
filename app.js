@@ -19,7 +19,7 @@ app.use("/cardApi", cardRoutes);
 app.use("/userApi", userRoutes);
 
 app.use((req, res, next) => {
-  const error = new HttpError("Route not found", 404);
+  const error = new HttpError("This route was not found", 404);
   throw error;
 });
 
