@@ -1,29 +1,10 @@
 // package import
-const { v4: uuidv4 } = require("uuid");
+// const { v4: uuidv4 } = require("uuid");
 // validation
 const { validationResult } = require("express-validator");
 // model imports
 const HttpError = require("../models/http_error");
 const User = require("../models/userModel");
-
-let DUMMY_USER_LIST = [
-  {
-    userId: "jStein",
-    userEmail: "jStein@literary.com",
-    password: "test 1",
-    userStacks: ["s001", "s003"],
-    firstName: "John",
-    lastName: "Steinbeck",
-  },
-  {
-    userId: "ernHem",
-    userEmail: "ernHem@literary.com",
-    password: "test 2",
-    userStacks: ["s002"],
-    firstName: "Ernest",
-    lastName: "Hemingway",
-  },
-];
 
 // get all users
 async function getUsers(req, res, next) {
@@ -38,24 +19,6 @@ async function getUsers(req, res, next) {
     listOfUsers: allUsers.map((all) => all.toObject({ getters: true })),
   });
 }
-
-// * To be changed to: getUserStackNumbers
-// function addUser(req, res, next) {
-//   console.log(req.body);
-//   const { userStacks, firstName, lastName } = req.body;
-//   const newUserCreated = {
-//     id: uuidv4(),
-//     userStacks,
-//     firstName,
-//     lastName,
-//     password,
-//   };
-//   DUMMY_USER_LIST.push(newUserCreated);
-//   console.log("Received post, added", newUserCreated);
-//   res.status(201).json({ added: newUserCreated });
-// }
-//TODO don't forget to add, later, the function that adds the
-//TODO unique id to the list of stacks owned by users in the users json
 
 async function signUp(req, res, next) {
   console.log("Sign up function");

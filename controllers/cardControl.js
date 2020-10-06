@@ -1,5 +1,5 @@
 const { get } = require("got");
-const { v4: uuidv4 } = require("uuid");
+// const { v4: uuidv4 } = require("uuid");
 const mongoose = require("mongoose");
 // model imports
 const HttpError = require("../models/http_error");
@@ -9,27 +9,6 @@ const listOfUsers = require("../models/userModel");
 const { validationResult } = require("express-validator");
 const mongooseUniqueValidator = require("mongoose-unique-validator");
 const { selectFields } = require("express-validator/src/select-fields");
-
-let DUMMY_Stack = [
-  {
-    id: "s000",
-    stackName: "test stack",
-    createdBy: "Steinbeck",
-    cards: { front: "front of the card", back: "back of the same card" },
-  },
-  {
-    id: "s001",
-    stackName: "2nd stack",
-    createdBy: "Hemingway",
-    cards: { front: "for whom the bells toll", back: "they toll for you" },
-  },
-  {
-    id: "s002",
-    stackName: "Another test",
-    createdBy: "Steinbeck",
-    cards: { front: "wines", back: "of wrath" },
-  },
-];
 
 async function getStackByID(req, res, next) {
   const stackId = req.params.No;
@@ -52,7 +31,7 @@ async function getStackByID(req, res, next) {
   }
 }
 
-// ! to be implemented should I search by 'created by' or by user id?
+// ! to be checked should I search by 'created by' or by user id?
 async function getStacksByUser(req, res, next) {
   const creator = req.params.uid;
   let creatorStacks;
@@ -153,20 +132,9 @@ async function updateStack(req, res, next) {
     );
     return next(error);
   }
-  // previous implementation
-  /// finding element to update
-  // const updatedStack = { ...DUMMY_Stack.find((u) => u.id === stackNo) };
-  // creating a full version of the stack data before updating
-  // Previous implementation
-  // const indexOfChange = DUMMY_Stack.find((u) => u.id === stackNo);
-  // updatedStack.id = stackNo;
   updatedStack.stackName = stackName;
   updatedStack.createdBy = createdBy;
   updatedStack.cards = cards;
-  // now the actual update
-  // previous implementation
-  // DUMMY_Stack[stackNo] = updatedStack;
-  // console.log("Updated: ", DUMMY_Stack);
   try {
     await updateStack.save();
   } catch (err) {

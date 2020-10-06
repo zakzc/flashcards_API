@@ -2,16 +2,10 @@
 const express = require("express");
 const router = express.Router();
 const { check } = require("express-validator");
-// model imports
-// const HttpError = require("../models/http_error");
 // controller imports
 const userControl = require("../controllers/userControl");
 
 router.get("/", userControl.getUsers);
-
-// router.get("/:user", userControl.getUserById);
-
-// router.post("/add", userControl.addUser);
 
 router.post(
   "/signUp",
