@@ -178,25 +178,34 @@ async function updateStack(req, res, next) {
 
 async function deleteStack(req, res, next) {
   const itemToDelete = req.params.No;
+  console.log("for deletion: ", itemToDelete);
   let stackToDelete;
   try {
-    stackToDelete = await SetOfCards.findById(itemToDelete);
+    stackToDelete = await SetOfCards.findById(itemToDelete).populate(
+      "createdBy"
+    );
+    // stackToDelete = await SetOfCards.findById(itemToDelete);
+    console.log("stack to delete: ", stackToDelete);
   } catch (err) {
     const error = new HttpError("Could not find item to delete.", 500);
     return next(error);
   }
+  if (!stackToDelete) {
+    const error = new HttpError("Stack for deletion not found", 404);
+    return next(error);
+  }
   try {
-    await stackToDelete.remove();
+    // * same as in create stack, parallel operations
+    const sess = await mongoose.startSession();
+    sess.startTransaction();
+    await stackToDelete.remove({ session: sess });
+    stackToDelete.createdBy.userStacks.pull(stackToDelete);
+    await stackToDelete.createdBy.save({ session: sess });
+    await sess.commitTransaction();
   } catch (err) {
     const error = new HttpError("Delete operation failed", 500);
     return next(error);
   }
-  // previous implementation
-  // if (!DUMMY_Stack.find((f) => f.id === itemToDelete)) {
-  //   throw new HttpError("No item found for deletion", 401);
-  // }
-  // DUMMY_Stack = DUMMY_Stack.filter((f) => f.id !== itemToDelete);
-
   console.log("Deleted item: ", itemToDelete);
   res.status(200).json({ Deleted: itemToDelete });
 }
