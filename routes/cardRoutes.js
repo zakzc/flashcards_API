@@ -13,13 +13,13 @@ router.get("/:No", cardControl.getStackByID);
 router.get("/getStacksByUser/:uid", cardControl.getStacksByUser);
 
 router.post(
-  "/add",
+  "/addNewStack",
   [
     check("stackName").not().isEmpty(),
     check("createdBy").not().isEmpty(),
-    check("cards").isLength({ min: 2 }),
+    check("cards").not().isEmpty(),
   ],
-  cardControl.addStack
+  cardControl.addNewStack
 );
 
 router.patch("/:No", cardControl.updateStack);

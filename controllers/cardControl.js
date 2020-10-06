@@ -1,10 +1,14 @@
 const { get } = require("got");
 const { v4: uuidv4 } = require("uuid");
-// validation
-const { validationResult } = require("express-validator");
+const mongoose = require("mongoose");
 // model imports
 const HttpError = require("../models/http_error");
 const SetOfCards = require("../models/cardsModel");
+const listOfUsers = require("../models/userModel");
+// validation imports
+const { validationResult } = require("express-validator");
+const mongooseUniqueValidator = require("mongoose-unique-validator");
+const { selectFields } = require("express-validator/src/select-fields");
 
 let DUMMY_Stack = [
   {
@@ -75,34 +79,51 @@ async function getStacksByUser(req, res, next) {
   );
 }
 
-async function addStack(req, res, next) {
-  console.log(req.body);
-  const { stackName, createdBy, cards } = req.body;
+async function addNewStack(req, res, next) {
+  // validation
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    throw new HttpError("error on data validation for add stack request", 422);
+    return next(
+      new HttpError("error on data validation for add stack request", 422)
+    );
   }
-  // * previous API only implementation
-  //   const newStackCreated = {
-  //     id: uuidv4(),
-  //     stackName,
-  //     createdBy,
-  //     cards,
-  //   };
-  // with saving to local dummy variable
-  //   DUMMY_Stack.push(newStackCreated);
-  //   console.log("Received post, added", newStackCreated);
-  //   res.status(201).json({ Added: newStackCreated });
-  // }
-  // * implementation with Mongoose
+  // assignment
+  const { stackName, createdBy, cards } = req.body;
   const newStackCreated = new SetOfCards({
     stackName,
     createdBy,
     cards,
   });
-
+  console.log("new to create: ", newStackCreated);
+  // connection to user DB to retrieve the name of the user who created this stack
+  let currentUser;
   try {
-    await newStackCreated.save();
+    // is the current user in memory already?
+    currentUser = await listOfUsers.findById(createdBy);
+    console.log("user is ", currentUser);
+  } catch (err) {
+    const error = new HttpError("No current user: " + currentUser, 500);
+    return next(error);
+  }
+  // is there any user logged in?
+  if (!currentUser) {
+    const error = new HttpError("No user logged in or user doesn't exist", 404);
+    return next(error);
+  }
+  console.log("user is ", currentUser);
+  // saving process
+  console.log("to add: ", newStackCreated);
+  try {
+    // * Parallel DB processes using session:
+    // both operations: add created by (author) to Stack and add Stack to User data
+    // are atomic: both or nothing. For that, we need mongoose transaction and session
+    const sess = await mongoose.startSession();
+    sess.startTransaction();
+    await newStackCreated.save({ session: sess });
+    currentUser.userStacks.push(newStackCreated.id);
+    await currentUser.save({ session: sess });
+    await sess.commitTransaction();
+    //// *
   } catch (err) {
     const error = new HttpError("Error on adding new stack", 500);
     return next(error);
@@ -186,6 +207,6 @@ async function deleteStack(req, res, next) {
 // export of CRUD functions
 exports.getStackByID = getStackByID;
 exports.getStacksByUser = getStacksByUser;
-exports.addStack = addStack;
+exports.addNewStack = addNewStack;
 exports.updateStack = updateStack;
 exports.deleteStack = deleteStack;

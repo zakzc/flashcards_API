@@ -69,7 +69,7 @@ async function signUp(req, res, next) {
     );
   }
   // variable assignment from req
-  const { userEmail, password, firstName, lastName, userStacks } = req.body;
+  const { userEmail, password, firstName, lastName } = req.body;
   /// is user listed already?
   let doesUserExist;
   try {
@@ -90,7 +90,7 @@ async function signUp(req, res, next) {
     password,
     firstName,
     lastName,
-    userStacks,
+    userStacks: [],
   });
   console.log("created: ", newUserToCreate);
   // Now save it
@@ -102,6 +102,7 @@ async function signUp(req, res, next) {
     return next(error);
   }
   // and return
+  console.log("Sign up of user: ", newUserToCreate);
   res.status(201).json({ user: newUserToCreate.toObject({ getters: true }) });
 }
 
@@ -116,18 +117,6 @@ async function logIn(req, res, next) {
     const error = new HttpError("Problems on user log in", 500);
     return next(error);
   }
-  // validate req
-  // const errors = validationResult(req);
-  // checks
-  // if (!errors.isEmpty()) {
-  //   const error = new HttpError(
-  //     "error on data validation for user log in",
-  //     422
-  //   );
-  //   return next(error);
-  // }
-  // previous
-  // const userListed = DUMMY_USER_LIST.find((u) => u.userEmail === userEmail);
   if (!userExists || userExists.password !== password) {
     const error = new HttpError(
       "Sign up not possible: invalid credentials",
@@ -135,6 +124,7 @@ async function logIn(req, res, next) {
     );
     return next(error);
   }
+  console.log("Log in of user: ", userExists);
   res.json({ message: "User: " + userEmail + " logged in" });
 }
 

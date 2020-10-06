@@ -7,7 +7,13 @@ const userSchema = new Schema({
   password: { type: String, required: true, minlength: 5 },
   firstName: { type: String, required: true },
   lastName: { type: String, required: true },
-  userStacks: { type: Object },
+  userStacks: [
+    {
+      type: mongoose.Types.ObjectId,
+      required: true,
+      ref: "setOfCards",
+    },
+  ],
 });
 
 // complements the unique parameter in the userEmail
