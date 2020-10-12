@@ -8,6 +8,7 @@ const User = require("../models/userModel");
 
 // get all users
 async function getUsers(req, res, next) {
+  console.log("Get users request");
   let allUsers;
   try {
     allUsers = await User.find({}, "-password");
@@ -73,6 +74,7 @@ async function logIn(req, res, next) {
   console.log("Log in function");
   // get data from req
   const { userEmail, password } = req.body;
+  // console.log("received request: ", userEmail, password);
   let userExists;
   try {
     userExists = await User.findOne({ userEmail: userEmail });
@@ -87,8 +89,13 @@ async function logIn(req, res, next) {
     );
     return next(error);
   }
-  console.log("Log in of user: ", userExists);
-  res.json({ message: "User: " + userEmail + " logged in" });
+  let logInUser = await User.findOne({ userEmail: userEmail }, "-password");
+  // res.json({
+  //   listOfUsers: allUsers.map((all) => all.toObject({ getters: true })),
+  // });
+
+  console.log("Log in of user: OK");
+  res.json(logInUser);
 }
 
 // exports.getUserById = getUserById;
