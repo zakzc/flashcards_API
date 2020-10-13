@@ -6,19 +6,35 @@ const { validationResult } = require("express-validator");
 const HttpError = require("../models/http_error");
 const User = require("../models/userModel");
 
-// get all users
-async function getUsers(req, res, next) {
-  console.log("Get users request");
-  let allUsers;
+// async function getUsers(req, res, next) {
+//   console.log("Get users request");
+//   let allUsers;
+//   try {
+//     allUsers = await User.find({}, "-password");
+//   } catch (err) {
+//     const error = new HttpError("No users found", 500);
+//     return next(error);
+//   }
+//   res.json({
+//     listOfUsers: allUsers.map((all) => all.toObject({ getters: true })),
+//   });
+// }
+
+async function getUserDataByID(req, res, next) {
+  const userId = req.params.No;
+  let returnUserData;
   try {
-    allUsers = await User.find({}, "-password");
+    returnUserData = await User.findById(userId);
   } catch (err) {
-    const error = new HttpError("No users found", 500);
+    const error = new HttpError("Error on getting user Data by id: ", 500);
     return next(error);
   }
-  res.json({
-    listOfUsers: allUsers.map((all) => all.toObject({ getters: true })),
-  });
+  if (!returnUserData) {
+    const error = new HttpError("no data found on User API", 404);
+    return next(error);
+  } else {
+    res.json({ stack: returnUserData.toObject({ getters: true }) });
+  }
 }
 
 async function signUp(req, res, next) {
@@ -99,7 +115,7 @@ async function logIn(req, res, next) {
 }
 
 // exports.getUserById = getUserById;
-exports.getUsers = getUsers;
+exports.getUserDataByID = getUserDataByID;
 // exports.addUser = addUser;
 exports.signUp = signUp;
 exports.logIn = logIn;
