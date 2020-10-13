@@ -27,7 +27,7 @@ async function getStackByID(req, res, next) {
     const error = new HttpError("no data found on Card API", 404);
     return next(error);
   } else {
-    res.json({ stack: returnStack.toObject({ getters: true }) });
+    res.json(returnStack.toObject({ getters: true }));
   }
 }
 

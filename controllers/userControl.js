@@ -23,6 +23,7 @@ const User = require("../models/userModel");
 async function getUserDataByID(req, res, next) {
   const userId = req.params.No;
   let returnUserData;
+  console.log("Request for data from user");
   try {
     returnUserData = await User.findById(userId);
   } catch (err) {
@@ -33,7 +34,7 @@ async function getUserDataByID(req, res, next) {
     const error = new HttpError("no data found on User API", 404);
     return next(error);
   } else {
-    res.json({ stack: returnUserData.toObject({ getters: true }) });
+    res.json(returnUserData.toObject({ getters: true }));
   }
 }
 
@@ -111,7 +112,8 @@ async function logIn(req, res, next) {
   // });
 
   console.log("Log in of user: OK");
-  res.json(logInUser);
+  // res.json(logInUser);
+  res.json(logInUser.toObject({ getters: true }));
 }
 
 // exports.getUserById = getUserById;
