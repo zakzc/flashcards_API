@@ -92,19 +92,27 @@ async function addNewStack(req, res, next) {
   console.log("user is ", currentUser);
   // saving process
   console.log("to add: ", newStackCreated);
+  // ! New stack formatting
+  let newStackToUser = {
+    stack_id: newStackCreated._id,
+    name: newStackCreated.stackName,
+  };
+  console.log("to be added to user stacks: ", newStackToUser);
   try {
     // * Parallel DB processes using session:
     // both operations: add created by (author) to Stack and add Stack to User data
-    // are atomic: both or nothing. For that, we need mongoose transaction and session
+    // are atomic. For that, we need mongoose transaction and session
     const sess = await mongoose.startSession();
     sess.startTransaction();
     await newStackCreated.save({ session: sess });
-    currentUser.userStacks.push(newStackCreated.id);
+    currentUser.userStacks.push(newStackToUser);
     await currentUser.save({ session: sess });
     await sess.commitTransaction();
     //// *
   } catch (err) {
+    // ! point of error with new formatting: data validation
     const error = new HttpError("Error on adding new stack", 500);
+    console.log("-------- Run into an Error: --------- \n", err);
     return next(error);
   }
 
@@ -164,6 +172,7 @@ async function deleteStack(req, res, next) {
   }
   try {
     // * same as in create stack, parallel operations
+    // it deletes the stack and remove it from the user list of stacks
     const sess = await mongoose.startSession();
     sess.startTransaction();
     await stackToDelete.remove({ session: sess });
