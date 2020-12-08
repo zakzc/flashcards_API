@@ -12,10 +12,6 @@ const { selectFields } = require("express-validator/src/select-fields");
 
 async function getStackByID(req, res, next) {
   const stackId = req.params.No;
-  // * previous implementation
-  // const returnStack = DUMMY_Stack.find((c) => {
-  //   return c.id === stackId;
-  // });
   let returnStack;
   try {
     returnStack = await SetOfCards.findById(stackId);
@@ -94,7 +90,7 @@ async function addNewStack(req, res, next) {
   console.log("to add: ", newStackCreated);
   let newStackToUser = {
     stack_id: newStackCreated._id,
-    name: newStackCreated.stackName,
+    stack_name: newStackCreated.stackName,
   };
   console.log("to be added to user stacks: ", newStackToUser);
   try {
@@ -184,9 +180,6 @@ async function deleteStack(req, res, next) {
   console.log("Deleted item: ", itemToDelete);
   res.status(200).json({ Deleted: itemToDelete });
 }
-
-//TODO don't forget to add, later, the function that adds the
-//TODO unique id to the list of stacks owned by users in the users json
 
 // export of CRUD functions
 exports.getStackByID = getStackByID;
