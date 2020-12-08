@@ -31,7 +31,7 @@ async function getStackByID(req, res, next) {
   }
 }
 
-// ! to be checked should I search by 'created by' or by user id?
+// ! to be updated
 async function getStacksByUser(req, res, next) {
   const creator = req.params.uid;
   let creatorStacks;
@@ -92,7 +92,6 @@ async function addNewStack(req, res, next) {
   console.log("user is ", currentUser);
   // saving process
   console.log("to add: ", newStackCreated);
-  // ! New stack formatting
   let newStackToUser = {
     stack_id: newStackCreated._id,
     name: newStackCreated.stackName,
@@ -110,9 +109,8 @@ async function addNewStack(req, res, next) {
     await sess.commitTransaction();
     //// *
   } catch (err) {
-    // ! point of error with new formatting: data validation
     const error = new HttpError("Error on adding new stack", 500);
-    console.log("-------- Run into an Error: --------- \n", err);
+    console.log("-------- Error: --------- \n", err);
     return next(error);
   }
 
