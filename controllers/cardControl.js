@@ -27,7 +27,6 @@ async function getStackByID(req, res, next) {
   }
 }
 
-// ! to be updated
 async function getStacksByUser(req, res, next) {
   const creator = req.params.uid;
   let creatorStacks;
@@ -147,15 +146,20 @@ async function updateStack(req, res, next) {
 }
 
 async function deleteStack(req, res, next) {
+  // stack data
   const itemToDelete = req.params.No;
   console.log("for deletion: ", itemToDelete);
   let stackToDelete;
+  // user data
+  let currentUser;
+  let stackIndexNo;
+  ///
+  /// * Check data integrity
+  ///
   try {
     stackToDelete = await SetOfCards.findById(itemToDelete).populate(
       "createdBy"
     );
-    // stackToDelete = await SetOfCards.findById(itemToDelete);
-    console.log("stack to delete: ", stackToDelete);
   } catch (err) {
     const error = new HttpError("Could not find item to delete.", 500);
     return next(error);
@@ -164,20 +168,72 @@ async function deleteStack(req, res, next) {
     const error = new HttpError("Stack for deletion not found", 404);
     return next(error);
   }
+  // Stack to delete is necessary to find user data
+  currentUser = await listOfUsers.findById(stackToDelete.createdBy);
+  stackIndexNo = currentUser.userStacks.findIndex(
+    (i) => i.stack_id == stackToDelete._id
+  );
+  console.log(
+    "------------ \n---Received:---\n ===Stack===\n ",
+    stackToDelete,
+    "\n===User===\n",
+    currentUser,
+    "\n===Index to delete===\n ",
+    stackIndexNo
+  );
+
+  /// * executes stack delete
+  ///
   try {
-    // * same as in create stack, parallel operations
     // it deletes the stack and remove it from the user list of stacks
+    //* Transaction
+    //////////////
     const sess = await mongoose.startSession();
     sess.startTransaction();
-    await stackToDelete.remove({ session: sess });
-    stackToDelete.createdBy.userStacks.pull(stackToDelete);
-    await stackToDelete.createdBy.save({ session: sess });
+    console.log("1) operation on stack\n");
+    //
+    // Delete Stack
+    try {
+      await stackToDelete.remove({ session: sess });
+      await stackToDelete.createdBy.save({ session: sess });
+    } catch (err) {
+      const error = new HttpError(
+        "Delete operation failed for stack deletion",
+        500
+      );
+      console.log("=== Error ===", err);
+      return next(error);
+    }
+    console.log("operation on current user, part 2");
+    ///
+    // Delete stack from user's list of stacks
+    try {
+      console.log("1st operation", currentUser.userStacks);
+      await currentUser.userStacks[stackIndexNo].remove({ session: sess });
+      console.log("2nd operation", currentUser.userStacks);
+      await currentUser.save({ session: sess });
+      console.log("Current user updated should be:\n ", currentUser);
+      console.log("commit transaction 2 now");
+    } catch (err) {
+      const error = new HttpError(
+        "Delete operation failed for update user's list of stacks.",
+        500
+      );
+      console.log("=== Error ===", err);
+      return next(error);
+    }
     await sess.commitTransaction();
   } catch (err) {
     const error = new HttpError("Delete operation failed", 500);
+    console.log("=== Error ===", err);
     return next(error);
   }
+  // * end of transaction
+  ///
+
+  ///
   console.log("Deleted item: ", itemToDelete);
+  console.log("user updated is: ", currentUser);
   res.status(200).json({ Deleted: itemToDelete });
 }
 
