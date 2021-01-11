@@ -9,8 +9,8 @@ const cardControl = require("../controllers/cardControl");
 
 router.get("/:No", cardControl.getStackByID);
 
-//! to be implemented
-router.get("/getStacksByUser/:uid", cardControl.getStacksByUser);
+// Not implemented
+// router.get("/getStacksByUser/:uid", cardControl.getStacksByUser);
 
 router.post(
   "/addNewStack",
