@@ -121,11 +121,19 @@ async function updateStack(req, res, next) {
       new HttpError("error on data validation for update request", 422)
     );
   }
-  const { stackName, createdBy, cards } = req.body;
-  const stackId = req.params.No;
+  // const stackId = req.params.No;
+  const { id, stackName, createdBy, cards } = req.body;
+  console.log(
+    "Patch request, received. The data is: ",
+    id,
+    stackName,
+    createdBy,
+    cards
+  );
   let updatedStack;
   try {
-    updateStack = await SetOfCards.findById(stackId);
+    updateStack = await SetOfCards.findById(id);
+    console.log("found?");
   } catch (err) {
     const error = new HttpError(
       "Could not update place. Place not found.",
@@ -133,16 +141,23 @@ async function updateStack(req, res, next) {
     );
     return next(error);
   }
-  updatedStack.stackName = stackName;
-  updatedStack.createdBy = createdBy;
-  updatedStack.cards = cards;
+  if (stackName) {
+    updateStack.stackName = stackName;
+  }
+  if (createdBy) {
+    updateStack.createdBy = createdBy;
+  }
+  if (cards) {
+    updateStack.cards = cards;
+  }
+  console.log("update stack variable", updateStack);
   try {
     await updateStack.save();
   } catch (err) {
     const error = new HttpError("Update operation failed", 500);
     return next(error);
   }
-  res.status(200).json({ Updated: updatedStack.toObject({ getters: true }) });
+  res.status(200).json({ Updated: updateStack.toObject({ getters: true }) });
 }
 
 async function deleteStack(req, res, next) {
