@@ -22,7 +22,15 @@ router.post(
   cardControl.addNewStack
 );
 
-router.patch("/:No", cardControl.updateStack);
+router.patch(
+  "/:No",
+  [
+    check("stackName").not().isEmpty(),
+    check("createdBy").not().isEmpty(),
+    check("cards").not().isEmpty(),
+  ],
+  cardControl.updateStack
+);
 
 router.delete("/:No", cardControl.deleteStack);
 

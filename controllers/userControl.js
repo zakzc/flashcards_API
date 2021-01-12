@@ -23,7 +23,7 @@ const User = require("../models/userModel");
 async function getUserDataByID(req, res, next) {
   const userId = req.params.No;
   let returnUserData;
-  console.log("Request for data from user");
+  // console.log("Request for data from user");
   try {
     returnUserData = await User.findById(userId);
   } catch (err) {
@@ -39,7 +39,7 @@ async function getUserDataByID(req, res, next) {
 }
 
 async function signUp(req, res, next) {
-  console.log("Sign up function");
+  // console.log("Sign up function");
   ////* Sequence of checks ////
   // data validation
   const errors = validationResult(req);
@@ -73,22 +73,22 @@ async function signUp(req, res, next) {
     lastName,
     userStacks: [],
   });
-  console.log("created: ", newUserToCreate);
+  // console.log("created: ", newUserToCreate);
   // Now save it
   try {
     await newUserToCreate.save();
-    console.log("Sign up: ", newUserToCreate);
+    // console.log("Sign up: ", newUserToCreate);
   } catch (err) {
     const error = new HttpError("Error on user sign up", 500);
     return next(error);
   }
   // and return
-  console.log("Sign up of user: ", newUserToCreate);
+  // console.log("Sign up of user: ", newUserToCreate);
   res.status(201).json({ user: newUserToCreate.toObject({ getters: true }) });
 }
 
 async function logIn(req, res, next) {
-  console.log("Log in function");
+  // console.log("Log in");
   // get data from req
   const { userEmail, password } = req.body;
   // console.log("received request: ", userEmail, password);
@@ -111,7 +111,7 @@ async function logIn(req, res, next) {
   //   listOfUsers: allUsers.map((all) => all.toObject({ getters: true })),
   // });
 
-  console.log("Log in of user: OK");
+  // console.log("Log in of user: OK");
   // res.json(logInUser);
   res.json(logInUser.toObject({ getters: true }));
 }

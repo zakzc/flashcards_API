@@ -33,7 +33,7 @@ async function getStacksByUser(req, res, next) {
   try {
     // later, instead of createdBy, the search will be by user ID
     creatorStacks = await SetOfCards.find({ createdBy: uid });
-    console.log(creator);
+    // console.log(creator);
   } catch (err) {
     const error = new HttpError("Failed to obtain a result", 500);
   }
@@ -68,13 +68,13 @@ async function addNewStack(req, res, next) {
     createdBy,
     cards,
   });
-  console.log("new to create: ", newStackCreated);
+  // console.log("new to create: ", newStackCreated);
   // connection to user DB to retrieve the name of the user who created this stack
   let currentUser;
   try {
     // is the current user in memory already?
     currentUser = await listOfUsers.findById(createdBy);
-    console.log("user is ", currentUser);
+    // console.log("user is ", currentUser);
   } catch (err) {
     const error = new HttpError("No current user: " + currentUser, 500);
     return next(error);
@@ -84,14 +84,14 @@ async function addNewStack(req, res, next) {
     const error = new HttpError("No user logged in or user doesn't exist", 404);
     return next(error);
   }
-  console.log("user is ", currentUser);
+  // console.log("user is ", currentUser);
   // saving process
-  console.log("to add: ", newStackCreated);
+  // console.log("to add: ", newStackCreated);
   let newStackToUser = {
     stack_id: newStackCreated._id,
     stack_name: newStackCreated.stackName,
   };
-  console.log("to be added to user stacks: ", newStackToUser);
+  // console.log("to be added to user stacks: ", newStackToUser);
   try {
     // * Parallel DB processes using session:
     // both operations: add created by (author) to Stack and add Stack to User data
@@ -148,7 +148,7 @@ async function updateStack(req, res, next) {
 async function deleteStack(req, res, next) {
   // stack data
   const itemToDelete = req.params.No;
-  console.log("for deletion: ", itemToDelete);
+  // console.log("for deletion: ", itemToDelete);
   let stackToDelete;
   // user data
   let currentUser;
@@ -190,7 +190,7 @@ async function deleteStack(req, res, next) {
     //////////////
     const sess = await mongoose.startSession();
     sess.startTransaction();
-    console.log("1) operation on stack\n");
+    // console.log("1) operation on stack\n");
     //
     // Delete Stack
     try {
@@ -204,16 +204,16 @@ async function deleteStack(req, res, next) {
       console.log("=== Error ===", err);
       return next(error);
     }
-    console.log("operation on current user, part 2");
+    // console.log("operation on current user, part 2");
     ///
     // Delete stack from user's list of stacks
     try {
-      console.log("1st operation", currentUser.userStacks);
+      // console.log("1st operation", currentUser.userStacks);
       await currentUser.userStacks[stackIndexNo].remove({ session: sess });
-      console.log("2nd operation", currentUser.userStacks);
+      // console.log("2nd operation", currentUser.userStacks);
       await currentUser.save({ session: sess });
-      console.log("Current user updated should be:\n ", currentUser);
-      console.log("commit transaction 2 now");
+      // console.log("Current user updated should be:\n ", currentUser);
+      // console.log("commit transaction 2 now");
     } catch (err) {
       const error = new HttpError(
         "Delete operation failed for update user's list of stacks.",
@@ -232,8 +232,8 @@ async function deleteStack(req, res, next) {
   ///
 
   ///
-  console.log("Deleted item: ", itemToDelete);
-  console.log("user updated is: ", currentUser);
+  // console.log("Deleted item: ", itemToDelete);
+  // console.log("user updated is: ", currentUser);
   res.status(200).json({ Deleted: itemToDelete });
 }
 
