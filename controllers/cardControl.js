@@ -123,13 +123,6 @@ async function updateStack(req, res, next) {
   }
   // const stackId = req.params.No;
   const { id, stackName, createdBy, cards } = req.body;
-  console.log(
-    "Patch request, received. The data is: ",
-    id,
-    stackName,
-    createdBy,
-    cards
-  );
   let updatedStack;
   try {
     updateStack = await SetOfCards.findById(id);
@@ -150,7 +143,7 @@ async function updateStack(req, res, next) {
   if (cards) {
     updateStack.cards = cards;
   }
-  console.log("update stack variable", updateStack);
+  // console.log("update stack variable", updateStack);
   try {
     await updateStack.save();
   } catch (err) {
