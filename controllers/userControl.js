@@ -5,20 +5,8 @@ const { validationResult } = require("express-validator");
 // model imports
 const HttpError = require("../models/http_error");
 const User = require("../models/userModel");
-
-// async function getUsers(req, res, next) {
-//   console.log("Get users request");
-//   let allUsers;
-//   try {
-//     allUsers = await User.find({}, "-password");
-//   } catch (err) {
-//     const error = new HttpError("No users found", 500);
-//     return next(error);
-//   }
-//   res.json({
-//     listOfUsers: allUsers.map((all) => all.toObject({ getters: true })),
-//   });
-// }
+// Encryption
+const bcrypt = require('bcryptjs');
 
 async function getUserDataByID(req, res, next) {
   const userId = req.params.No;
@@ -39,7 +27,6 @@ async function getUserDataByID(req, res, next) {
 }
 
 async function signUp(req, res, next) {
-  // console.log("Sign up function");
   ////* Sequence of checks ////
   // data validation
   const errors = validationResult(req);
@@ -65,10 +52,20 @@ async function signUp(req, res, next) {
     return next(error);
   }
   ////* Makes and saves new user ///
+
+  // Dealing with password
+  try {
+      let hashedPsw = bycrypt.hash(password, 12);
+  } catch (err) {
+    const error = newHttpError("could not create user, please try again", 500);
+    return next(error);
+  }
+
+
   // Make new user
   const newUserToCreate = new User({
     userEmail,
-    password,
+    hashedPsw,
     firstName,
     lastName,
     userStacks: [],
