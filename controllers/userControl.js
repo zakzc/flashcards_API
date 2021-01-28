@@ -5,8 +5,9 @@ const { validationResult } = require("express-validator");
 // model imports
 const HttpError = require("../models/http_error");
 const User = require("../models/userModel");
-// Encryption
-const bcrypt = require('bcryptjs');
+// Encryption & token
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 
 async function getUserDataByID(req, res, next) {
   const userId = req.params.No;
@@ -55,17 +56,16 @@ async function signUp(req, res, next) {
 
   // Dealing with password
   try {
-      let hashedPsw = bycrypt.hash(password, 12);
+    let hashedPsw = await bcrypt.hash(password, 12);
   } catch (err) {
     const error = newHttpError("could not create user, please try again", 500);
     return next(error);
   }
 
-
   // Make new user
   const newUserToCreate = new User({
     userEmail,
-    hashedPsw,
+    password: hashedPsw,
     firstName,
     lastName,
     userStacks: [],
@@ -79,9 +79,23 @@ async function signUp(req, res, next) {
     const error = new HttpError("Error on user sign up", 500);
     return next(error);
   }
+
+  // token -> sign up
+  let token;
+  try {
+    token = jwt.sign({ user: newUserToCreate.id }, "initial_secret", {
+      expiresIn: "1h",
+    });
+  } catch (err) {
+    const error = new HttpError("Error on token creation", 500);
+    return next(error);
+  }
+
   // and return
   // console.log("Sign up of user: ", newUserToCreate);
-  res.status(201).json({ user: newUserToCreate.toObject({ getters: true }) });
+  res
+    .status(201)
+    .json({ user: newUserToCreate, email: userEmail, token: token });
 }
 
 async function logIn(req, res, next) {
@@ -96,21 +110,46 @@ async function logIn(req, res, next) {
     const error = new HttpError("Problems on user log in", 500);
     return next(error);
   }
-  if (!userExists || userExists.password !== password) {
+  if (!userExists) {
     const error = new HttpError(
       "Sign up not possible: invalid credentials",
       401
     );
     return next(error);
   }
-  let logInUser = await User.findOne({ userEmail: userEmail }, "-password");
-  // res.json({
-  //   listOfUsers: allUsers.map((all) => all.toObject({ getters: true })),
-  // });
 
-  // console.log("Log in of user: OK");
-  // res.json(logInUser);
-  res.json(logInUser.toObject({ getters: true }));
+  let isValidPassword = false;
+  try {
+    isValidPassword = await bcrypt.compare(password, userExists.password);
+  } catch (err) {
+    const error = new HttpError("Invalid credentials", 500);
+    return next(error);
+  }
+
+  if (!isValidPassword) {
+    const error = new HttpError("Invalid credentials", 500);
+    return next(error);
+  }
+
+  let logInUser = await User.findOne({ userEmail: userEmail }, "password");
+
+  // token -> log in
+  let token;
+  try {
+    token = jwt.sign({ userId: newUserToCreate.id }, "initial_secret", {
+      expiresIn: "1h",
+    });
+  } catch (err) {
+    const error = new HttpError("Error on Log in", 500);
+    return next(error);
+  }
+
+  // connection
+  res.json({
+    userId: userExists.id,
+    email: userEmail,
+    token: token,
+  });
 }
 
 // exports.getUserById = getUserById;
