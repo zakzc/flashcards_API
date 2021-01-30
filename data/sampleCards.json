@@ -1,0 +1,34 @@
+[
+  {
+    "front": "This is a flashcard sample. Click on turn, to flip the card and see its back.",
+    "back": "This is the back of the card. Continue to the next card."
+  },
+  {
+    "front": "The flashcards app operates like this (flip now).",
+    "back": "You Write a theme to study (get to next card)"
+  },
+  {
+    "front": "You write the question or assertion in the front and (flip now)",
+    "back": "... in the back you write the answer (get to next card)."
+  },
+  {
+    "front": "You look at the front, think about the write answer (flip now)",
+    "back": "... and turn the card. If the answer was correct, you mark the correct button (next card)."
+  },
+  {
+    "front": "If your answer was wrong, obviously, you indicate it as well (flip card)",
+    "back": "The answer is mentally, so you are only accountable to yourself in your study. (next card)"
+  },
+  {
+    "front": "At the end, you see a set of stats relative to your performance (flip)",
+    "back": "You can add cards, edit cards, erase, download the whole stack (next card)"
+  },
+  {
+    "front": "And, of course, you can add your stack with your questions and answers (flip)",
+    "back": "The control is all yours and you can enhance your study, by improving your memorization (next card)."
+  },
+  {
+    "front": "And that is all. Now, create your own stack of cards (flip)",
+    "back": "Enjoy it and good luck in your studies."
+  }
+]

@@ -1,13 +1,16 @@
 // package import
 // const { v4: uuidv4 } = require("uuid");
+const mongoose = require("mongoose");
 // validation
 const { validationResult } = require("express-validator");
 // model imports
 const HttpError = require("../models/http_error");
+const Stacks = require("../models/cardsModel");
 const User = require("../models/userModel");
 // Encryption & token
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const sampleStack = require("../data/sampleCards.json");
 
 async function getUserDataByID(req, res, next) {
   const userId = req.params.No;
@@ -39,6 +42,8 @@ async function signUp(req, res, next) {
   }
   // variable assignment from req
   const { userEmail, password, firstName, lastName } = req.body;
+
+  // * Checks user
   /// is user listed already?
   let doesUserExist;
   try {
@@ -52,34 +57,60 @@ async function signUp(req, res, next) {
     const error = new HttpError("This user exists already", 422);
     return next(error);
   }
-  ////* Makes and saves new user ///
 
-  // Dealing with password
+  // * Checks password
+  // hashes password
+  let hashedPsw;
   try {
-    let hashedPsw = await bcrypt.hash(password, 12);
+    hashedPsw = await bcrypt.hash(password, 12);
   } catch (err) {
     const error = newHttpError("could not create user, please try again", 500);
     return next(error);
   }
+  ////* Makes and saves new user ///
 
   // Make new user
-  const newUserToCreate = new User({
+  let newUserToCreate = new User({
     userEmail,
     password: hashedPsw,
     firstName,
     lastName,
     userStacks: [],
   });
-  // console.log("created: ", newUserToCreate);
-  // Now save it
+  // Make the user's first stack
+  let userFirstStack = new Stacks({
+    stackName: "Sample Stack",
+    createdBy: newUserToCreate._id,
+    cards: sampleStack,
+  });
+  console.log("stack: ", userFirstStack);
+  newUserToCreate.userStacks.push(userFirstStack);
+  //
+  // Save user & stack
   try {
-    await newUserToCreate.save();
-    // console.log("Sign up: ", newUserToCreate);
+    // * Parallel DB processes using session:
+    const sess = await mongoose.startSession();
+    sess.startTransaction();
+    // TODO "why is it failing?"
+    await newUserToCreate.save({ session: sess });
+    await userFirstStack.save({ session: sess });
+    await sess.commitTransaction();
+    //// *
+    // newUserToCreate.save();
+    // userFirstStack.save({ session: sess });
   } catch (err) {
-    const error = new HttpError("Error on user sign up", 500);
+    const error = new HttpError("Error on user Sign up", 500);
+    console.log(
+      "\n-------- Error: --------- \n",
+      err,
+      "\n----------------- \n"
+    );
     return next(error);
   }
+  console.log("Created: ", newUserToCreate);
 
+  // Save stack
+  // userFirstStack.save();
   // token -> sign up
   let token;
   try {
@@ -107,12 +138,12 @@ async function logIn(req, res, next) {
   try {
     userExists = await User.findOne({ userEmail: userEmail });
   } catch (err) {
-    const error = new HttpError("Problems on user log in", 500);
+    const error = new HttpError("Error on user log in. Error 14.", 500);
     return next(error);
   }
   if (!userExists) {
     const error = new HttpError(
-      "Sign up not possible: invalid credentials",
+      "Sign up not possible: invalid credentials. Error 19.",
       401
     );
     return next(error);
@@ -131,16 +162,18 @@ async function logIn(req, res, next) {
     return next(error);
   }
 
-  let logInUser = await User.findOne({ userEmail: userEmail }, "password");
+  let logInUser;
+  logInUser = await User.findOne({ userEmail: userEmail });
 
   // token -> log in
   let token;
   try {
-    token = jwt.sign({ userId: newUserToCreate.id }, "initial_secret", {
+    token = jwt.sign({ user: userExists.id }, "initial_secret", {
       expiresIn: "1h",
     });
+    console.log("Check: ", token, userExists);
   } catch (err) {
-    const error = new HttpError("Error on Log in", 500);
+    const error = new HttpError("Error on Log in. Error 48.", 500);
     return next(error);
   }
 
