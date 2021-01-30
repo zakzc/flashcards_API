@@ -84,16 +84,18 @@ async function signUp(req, res, next) {
     cards: sampleStack,
   });
   console.log("stack: ", userFirstStack);
-  newUserToCreate.userStacks.push(userFirstStack);
+
   //
   // Save user & stack
   try {
     // * Parallel DB processes using session:
     const sess = await mongoose.startSession();
     sess.startTransaction();
-    // TODO "why is it failing?"
-    await newUserToCreate.save({ session: sess });
+    // TODO Check because it should only add the stack id to userStacks and the whole stack to stacks.
     await userFirstStack.save({ session: sess });
+    newUserToCreate.userStacks.push(userFirstStack._id);
+    await newUserToCreate.save({ session: sess });
+
     await sess.commitTransaction();
     //// *
     // newUserToCreate.save();
