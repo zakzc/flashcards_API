@@ -84,7 +84,6 @@ async function signUp(req, res, next) {
     cards: sampleStack,
   });
   console.log("stack: ", userFirstStack);
-
   //
   // Save user & stack
   try {
