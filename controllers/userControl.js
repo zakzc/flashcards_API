@@ -176,7 +176,6 @@ async function logIn(req, res, next) {
     token = jwt.sign({ user: userExists.id }, "initial_secret", {
       expiresIn: "1h",
     });
-    console.log("Log in detected.");
   } catch (err) {
     const error = new HttpError("Error on Log in. Error 48.", 500);
     return next(error);
