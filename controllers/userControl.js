@@ -144,17 +144,16 @@ async function logIn(req, res, next) {
   try {
     userExists = await User.findOne({ userEmail: userEmail });
   } catch (err) {
-    const error = new HttpError("Error on user log in. Error 14.", 500);
+    const error = new HttpError("Error on user log in. Error 147.", 500);
     return next(error);
   }
   if (!userExists) {
     const error = new HttpError(
-      "Sign up not possible: invalid credentials. Error 19.",
+      "Sign up not possible: invalid credentials. Error 152.",
       401
     );
     return next(error);
   }
-
   let isValidPassword = false;
   try {
     isValidPassword = await bcrypt.compare(password, userExists.password);
@@ -168,8 +167,8 @@ async function logIn(req, res, next) {
     return next(error);
   }
 
-  // let logInUser;
-  // logInUser = await User.findOne({ userEmail: userEmail });
+  let logInUser;
+  logInUser = await User.findOne({ userEmail: userEmail });
 
   // token -> log in
   let token;
@@ -182,8 +181,7 @@ async function logIn(req, res, next) {
     const error = new HttpError("Error on Log in. Error 48.", 500);
     return next(error);
   }
-  console.log("User data being sent from API", userExists);
-  // connection
+
   res.json({
     userId: userExists.id,
     email: userExists.userEmail,
