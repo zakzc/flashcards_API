@@ -12,6 +12,7 @@ const { selectFields } = require("express-validator/src/select-fields");
 
 async function getStackByID(req, res, next) {
   const stackId = req.params.No;
+  console.log("Request for stackID: ", req);
   let returnStack;
   try {
     returnStack = await SetOfCards.findById(stackId);

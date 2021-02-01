@@ -84,6 +84,8 @@ async function signUp(req, res, next) {
     cards: sampleStack,
   });
   console.log("stack: ", userFirstStack);
+  let firstStackID = userFirstStack._id;
+  console.log("Should be: ", firstStackID, userFirstStack._id);
   //
   // Save user & stack
   try {
@@ -92,7 +94,10 @@ async function signUp(req, res, next) {
     sess.startTransaction();
     // TODO Check because it should only add the stack id to userStacks and the whole stack to stacks.
     await userFirstStack.save({ session: sess });
-    newUserToCreate.userStacks.push(userFirstStack._id);
+    newUserToCreate.userStacks.push({
+      stack_id: firstStackID,
+      stack_name: userFirstStack.stackName,
+    });
     await newUserToCreate.save({ session: sess });
 
     await sess.commitTransaction();
@@ -131,7 +136,7 @@ async function signUp(req, res, next) {
 }
 
 async function logIn(req, res, next) {
-  // console.log("Log in");
+  console.log("Log in requested for: ", req.body);
   // get data from req
   const { userEmail, password } = req.body;
   // console.log("received request: ", userEmail, password);
@@ -163,8 +168,8 @@ async function logIn(req, res, next) {
     return next(error);
   }
 
-  let logInUser;
-  logInUser = await User.findOne({ userEmail: userEmail });
+  // let logInUser;
+  // logInUser = await User.findOne({ userEmail: userEmail });
 
   // token -> log in
   let token;
@@ -172,17 +177,20 @@ async function logIn(req, res, next) {
     token = jwt.sign({ user: userExists.id }, "initial_secret", {
       expiresIn: "1h",
     });
-    console.log("Check: ", token, userExists);
+    console.log("Log in detected.");
   } catch (err) {
     const error = new HttpError("Error on Log in. Error 48.", 500);
     return next(error);
   }
-
+  console.log("User data being sent from API", userExists);
   // connection
   res.json({
     userId: userExists.id,
-    email: userEmail,
+    email: userExists.userEmail,
+    firstName: userExists.firstName,
+    lastName: userExists.lastName,
     token: token,
+    userStacks: userExists.userStacks,
   });
 }
 

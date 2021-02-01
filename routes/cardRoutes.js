@@ -6,9 +6,9 @@ const { check } = require("express-validator");
 // const HttpError = require("../models/http_error");
 // controller imports
 const cardControl = require("../controllers/cardControl");
-const checkAuth = require("../middleware/check_auth");
+// const checkAuth = require("../middleware/check_auth");
 
-router.use(checkAuth);
+// router.use(checkAuth);
 
 router.get("/:No", cardControl.getStackByID);
 

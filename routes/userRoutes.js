@@ -4,8 +4,10 @@ const router = express.Router();
 const { check } = require("express-validator");
 // controller imports
 const userControl = require("../controllers/userControl");
+const checkAuth = require("../middleware/check_auth");
 
 // router.get("/", userControl.getUsers);
+// router.use(checkAuth);
 
 router.get("/:No", userControl.getUserDataByID);
 

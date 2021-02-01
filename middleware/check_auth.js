@@ -6,13 +6,13 @@ module.exports = (req, res, next) => {
     // authorization: " Bearer TOKEN"
     const token = req.headers.authorization.split(" ")[1];
     if (!token) {
-      throw new HttpError("Authentication failed", 401);
+      throw new HttpError("Authentication failed. No token. Error 09.", 401);
     }
     const decodedToken = jwt.verify(token, "initial_secret");
     req.userData = { userId: decodedToken.userId };
     next();
   } catch (err) {
-    const error = new HttpError("Authentication failed", 401);
+    const error = new HttpError("Authentication failed. error 15.", 401);
     return next(error);
   }
 };
