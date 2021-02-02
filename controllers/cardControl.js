@@ -12,19 +12,21 @@ const { selectFields } = require("express-validator/src/select-fields");
 
 async function getStackByID(req, res, next) {
   const stackId = req.params.No;
-  console.log("Request for stackID: ", req);
   let returnStack;
   try {
     returnStack = await SetOfCards.findById(stackId);
   } catch (err) {
-    const error = new HttpError("Error on getting stack by id: ", 500);
+    const error = new HttpError(
+      "Error on getting stack by id. Error 20. ",
+      500
+    );
     return next(error);
   }
   if (!returnStack) {
-    const error = new HttpError("no data found on Card API", 404);
+    const error = new HttpError("no data found on Card API. Error 24.", 404);
     return next(error);
   } else {
-    res.json(returnStack.toObject({ getters: true }));
+    res.json(returnStack);
   }
 }
 

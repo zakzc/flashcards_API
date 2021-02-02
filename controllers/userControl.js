@@ -136,7 +136,6 @@ async function signUp(req, res, next) {
 }
 
 async function logIn(req, res, next) {
-  console.log("Log in requested for: ", req.body);
   // get data from req
   const { userEmail, password } = req.body;
   // console.log("received request: ", userEmail, password);
@@ -167,8 +166,8 @@ async function logIn(req, res, next) {
     return next(error);
   }
 
-  let logInUser;
-  logInUser = await User.findOne({ userEmail: userEmail });
+  // let logInUser;
+  // logInUser = await User.findOne({ userEmail: userEmail });
 
   // token -> log in
   let token;
