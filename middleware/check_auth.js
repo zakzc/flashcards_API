@@ -16,6 +16,7 @@ module.exports = (req, res, next) => {
     }
     const decodedToken = jwt.verify(token, "initial_secret");
     req.userData = { userId: decodedToken.userId };
+    console.log("Authorized");
     next();
   } catch (err) {
     const error = new HttpError("Authentication failed (error 21).", 401);

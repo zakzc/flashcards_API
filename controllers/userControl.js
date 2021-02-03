@@ -179,8 +179,8 @@ async function logIn(req, res, next) {
     const error = new HttpError("Error on Log in. Error 48.", 500);
     return next(error);
   }
-
-  res.json({
+  console.log("Log In");
+  res.status(200).json({
     userId: userExists.id,
     email: userExists.userEmail,
     firstName: userExists.firstName,
