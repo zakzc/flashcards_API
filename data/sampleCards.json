@@ -9,11 +9,11 @@
   },
   {
     "front": "You write the question or assertion in the front and (flip now)",
-    "back": "... in the back you write the answer (get to next card)."
+    "back": "In the back you write the answer (get to next card)."
   },
   {
     "front": "You look at the front, think about the write answer (flip now)",
-    "back": "... and turn the card. If the answer was correct, you mark the correct button (next card)."
+    "back": "And turn the card. If the answer was correct, you mark the correct button (next card)."
   },
   {
     "front": "If your answer was wrong, obviously, you indicate it as well (flip card)",

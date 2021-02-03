@@ -129,7 +129,7 @@ async function updateStack(req, res, next) {
   let updatedStack;
   try {
     updateStack = await SetOfCards.findById(id);
-    console.log("found?");
+    // console.log("Searching for data regarding: ", id);
   } catch (err) {
     const error = new HttpError(
       "Could not update place. Place not found.",
@@ -137,23 +137,34 @@ async function updateStack(req, res, next) {
     );
     return next(error);
   }
-  if (stackName) {
-    updateStack.stackName = stackName;
+  if (updateStack && updateStack !== undefined) {
+    if (stackName) {
+      updateStack.stackName = stackName;
+    }
+    if (createdBy) {
+      updateStack.createdBy = createdBy;
+    }
+    if (cards) {
+      updateStack.cards = cards;
+    }
+  } else {
+    const error = new HttpError(
+      "Expected data, but received nothing or undefined (error 152)",
+      500
+    );
+    console.log("Expected data, but received nothing or undefined (error 152)");
+    return error;
   }
-  if (createdBy) {
-    updateStack.createdBy = createdBy;
-  }
-  if (cards) {
-    updateStack.cards = cards;
-  }
+
   // console.log("update stack variable", updateStack);
   try {
     await updateStack.save();
+    // console.log("Update complete");
+    res.status(200).json({ Updated: updateStack.toObject({ getters: true }) });
   } catch (err) {
     const error = new HttpError("Update operation failed", 500);
     return next(error);
   }
-  res.status(200).json({ Updated: updateStack.toObject({ getters: true }) });
 }
 
 async function deleteStack(req, res, next) {
