@@ -19,6 +19,7 @@ module.exports = (req, res, next) => {
     console.log("Authorized");
     next();
   } catch (err) {
+    console.log("NOT authorized");
     const error = new HttpError("Authentication failed (error 21).", 401);
     return next(error);
   }

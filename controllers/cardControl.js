@@ -57,6 +57,7 @@ async function getStacksByUser(req, res, next) {
 }
 
 async function addNewStack(req, res, next) {
+  console.log("Add New Stack");
   // validation
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -66,6 +67,7 @@ async function addNewStack(req, res, next) {
   }
   // assignment
   const { stackName, createdBy, cards } = req.body;
+  console.log("Request for: ", stackName, createdBy, cards);
   const newStackCreated = new SetOfCards({
     stackName,
     createdBy,
