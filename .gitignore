@@ -52,3 +52,6 @@ typings/
 
 # Mac files
 .DS_Store
+
+# Keys and credential files
+nodemon.json

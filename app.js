@@ -46,7 +46,7 @@ app.use((error, req, res, next) => {
 
 mongoose
   .connect(
-    "mongodb+srv://zak:XG4lGCacJqq6cFKH@cluster0.ybfne.gcp.mongodb.net/<Flashcards>?authSource=admin?retryWrites=true&w=majority",
+    `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PSW}@cluster0.ybfne.gcp.mongodb.net/${process.env.DB_NAME}?authSource=admin?retryWrites=true&w=majority`,
     { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true }
   )
   .then(() => {

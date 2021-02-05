@@ -120,7 +120,7 @@ async function signUp(req, res, next) {
   // token -> sign up
   let token;
   try {
-    token = jwt.sign({ user: newUserToCreate.id }, "initial_secret", {
+    token = jwt.sign({ user: newUserToCreate.id }, process.env.JWT_KEY, {
       expiresIn: "1h",
     });
   } catch (err) {
@@ -172,7 +172,7 @@ async function logIn(req, res, next) {
   // token -> log in
   let token;
   try {
-    token = jwt.sign({ user: userExists.id }, "initial_secret", {
+    token = jwt.sign({ user: userExists.id }, process.env.JWT_KEY, {
       expiresIn: "1h",
     });
   } catch (err) {

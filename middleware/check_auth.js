@@ -14,7 +14,7 @@ module.exports = (req, res, next) => {
     if (!token) {
       throw new HttpError("Authentication failed. No token (error 15).", 401);
     }
-    const decodedToken = jwt.verify(token, "initial_secret");
+    const decodedToken = jwt.verify(token, process.env.JWT_KEY);
     req.userData = { userId: decodedToken.userId };
     console.log("Authorized");
     next();
