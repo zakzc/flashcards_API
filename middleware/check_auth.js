@@ -16,7 +16,7 @@ module.exports = (req, res, next) => {
     }
     const decodedToken = jwt.verify(token, process.env.JWT_KEY);
     req.userData = { userId: decodedToken.userId };
-    console.log("Authorized");
+    // console.log("Authorized");
     next();
   } catch (err) {
     console.log("NOT authorized");
