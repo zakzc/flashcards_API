@@ -1,5 +1,3 @@
-// const { get } = require("got");
-// const { v4: uuidv4 } = require("uuid");
 const mongoose = require("mongoose");
 // model imports
 const HttpError = require("../models/http_error");
