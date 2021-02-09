@@ -155,7 +155,7 @@ async function updateStack(req, res, next) {
   }
   try {
     await updateStack.save();
-    console.log("Update complete");
+    // console.log("Update complete");
     // res.status(200).json({ Updated: updateStack.toObject({ getters: true }) });
   } catch (err) {
     const error = new HttpError("Update operation failed", 500);

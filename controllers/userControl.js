@@ -83,9 +83,8 @@ async function signUp(req, res, next) {
     createdBy: newUserToCreate._id,
     cards: sampleStack,
   });
-  console.log("stack: ", userFirstStack);
   let firstStackID = userFirstStack._id;
-  console.log("Should be: ", firstStackID, userFirstStack._id);
+
   //
   // Save user & stack
   try {
@@ -113,7 +112,7 @@ async function signUp(req, res, next) {
     );
     return next(error);
   }
-  console.log("Created: ", newUserToCreate);
+  // console.log("Created: ", newUserToCreate);
 
   // Save stack
   // userFirstStack.save();
@@ -166,9 +165,6 @@ async function logIn(req, res, next) {
     return next(error);
   }
 
-  // let logInUser;
-  // logInUser = await User.findOne({ userEmail: userEmail });
-
   // token -> log in
   let token;
   try {
@@ -179,7 +175,7 @@ async function logIn(req, res, next) {
     const error = new HttpError("Error on Log in. Error 48.", 500);
     return next(error);
   }
-  console.log("Log In");
+  // console.log("Log In");
   res.status(200).json({
     userId: userExists.id,
     email: userExists.userEmail,
