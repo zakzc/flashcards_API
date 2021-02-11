@@ -1,19 +1,27 @@
-const { CheckForInvalidCharacters, CheckInput } = require("../utils/validate");
+const { validateEmail, validatePasswordInput } = require("../utils/validate");
+const { CheckForInvalidCharacters, CheckInput } = require("../utils/checks");
 
-describe("Check for characters", () => {
-  test("Check for invalid input data", () => {
-    expect(CheckForInvalidCharacters("wrong!string")).toEqual(false);
+const checkChar = jest.fn(CheckForInvalidCharacters);
+const checkIn = jest.fn(CheckInput);
+
+describe("Utilities - Validation", () => {
+  checkChar.mockReturnValueOnce(true);
+  checkIn.mockReturnValueOnce(true);
+  test("Test email validation", () => {
+    expect(validateEmail("test@testme.com")).toBe(true);
   });
-  test("Check for valid input data", () => {
-    expect(CheckForInvalidCharacters("correct")).toEqual(true);
+  test("Test password validation", () => {
+    expect(validatePasswordInput("correct")).toBe(true);
   });
 });
 
-describe("Check Input", () => {
-  test("Check for invalid input", () => {
-    expect(CheckInput("no")).toEqual(false);
+describe("Utilities - Counter Test", () => {
+  checkChar.mockReturnValueOnce(true);
+  checkIn.mockReturnValueOnce(true);
+  test("Test email validation", () => {
+    expect(validateEmail("testMe.com")).toBe(false);
   });
-  test("Check for valid input", () => {
-    expect(CheckInput("this_is_a_correct_input")).toEqual(true);
+  test("Test password validation", () => {
+    expect(validatePasswordInput("")).toBe(false);
   });
 });
