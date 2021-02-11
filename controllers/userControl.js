@@ -3,6 +3,8 @@
 const mongoose = require("mongoose");
 // validation
 const { validationResult } = require("express-validator");
+// my validation
+const { validateEmail, validatePasswordInput } = require("../utils/validate");
 // model imports
 const HttpError = require("../models/http_error");
 const Stacks = require("../models/cardsModel");
@@ -32,9 +34,8 @@ async function getUserDataByID(req, res, next) {
 
 async function signUp(req, res, next) {
   ////* Sequence of checks ////
-  // data validation
+  // data pre-validation
   const errors = validationResult(req);
-  // is pre-validation ok?
   if (!errors.isEmpty()) {
     return next(
       new HttpError("error on data validation for user sign up", 422)
@@ -42,7 +43,15 @@ async function signUp(req, res, next) {
   }
   // variable assignment from req
   const { userEmail, password, firstName, lastName } = req.body;
-
+  // new validation
+  if (validateEmail(userEmail) === false) {
+    const error = new HttpError("This is not a valid email", 422);
+    return next(error);
+  }
+  if (validatePasswordInput(password) === false) {
+    const error = new HttpError("This is not a valid password", 422);
+    return next(error);
+  }
   // * Checks user
   /// is user listed already?
   let doesUserExist;
@@ -101,8 +110,6 @@ async function signUp(req, res, next) {
 
     await sess.commitTransaction();
     //// *
-    // newUserToCreate.save();
-    // userFirstStack.save({ session: sess });
   } catch (err) {
     const error = new HttpError("Error on user Sign up", 500);
     console.log(
@@ -112,10 +119,6 @@ async function signUp(req, res, next) {
     );
     return next(error);
   }
-  // console.log("Created: ", newUserToCreate);
-
-  // Save stack
-  // userFirstStack.save();
   // token -> sign up
   let token;
   try {
