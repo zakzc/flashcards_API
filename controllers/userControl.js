@@ -4,13 +4,17 @@ const mongoose = require("mongoose");
 // validation
 const { validationResult } = require("express-validator");
 // my validation
-const { validateEmail, validatePasswordInput } = require("../utils/validate");
+// const { validateEmail, validatePasswordInput } = require("../utils/validate");
+const { checkInput } = require("../utils/checkInput");
+// Utils
+const findUser = require("../utils/findUser");
+const hashPsw = require("../utils/hashPsw");
 // model imports
 const HttpError = require("../models/http_error");
 const Stacks = require("../models/cardsModel");
 const User = require("../models/userModel");
 // Encryption & token
-const bcrypt = require("bcryptjs");
+// const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const sampleStack = require("../data/sampleCards.json");
 
@@ -34,7 +38,7 @@ async function getUserDataByID(req, res, next) {
 
 async function signUp(req, res, next) {
   ////* Sequence of checks ////
-  // data pre-validation
+  // Express validation
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return next(
@@ -43,41 +47,30 @@ async function signUp(req, res, next) {
   }
   // variable assignment from req
   const { userEmail, password, firstName, lastName } = req.body;
-  // new validation
-  if (validateEmail(userEmail) === false) {
-    const error = new HttpError("This is not a valid email", 422);
+  // My validation
+  if (checkInput(userEmail, password, firstName, lastName) !== true) {
+    const error = new HttpError("Validation failed (error 49).", 500);
     return next(error);
   }
-  if (validatePasswordInput(password) === false) {
-    const error = new HttpError("This is not a valid password", 422);
-    return next(error);
-  }
-  // * Checks user
-  /// is user listed already?
-  let doesUserExist;
-  try {
-    doesUserExist = await User.findOne({ userEmail: userEmail });
-  } catch (err) {
-    const error = new HttpError("Problems on user sign up", 500);
-    return next(error);
-  }
-  // does it already exist?
-  if (doesUserExist) {
+  // Checks user existence - user should not exist.
+  if (findUser(userEmail) === true) {
     const error = new HttpError("This user exists already", 422);
     return next(error);
   }
-
-  // * Checks password
-  // hashes password
-  let hashedPsw;
-  try {
-    hashedPsw = await bcrypt.hash(password, 12);
-  } catch (err) {
-    const error = newHttpError("could not create user, please try again", 500);
+  // Hashes password
+  // let hashedPsw;
+  // try {
+  //   hashedPsw = await bcrypt.hash(password, 12);
+  // } catch (err) {
+  //   const error = newHttpError("could not create user, please try again", 500);
+  //   return next(error);
+  // }
+  let hashedPsw = await hashPsw(password);
+  if (hashedPsw === false || !hashedPsw) {
+    const error = newHttpError("Problems with password (error 70).", 500);
     return next(error);
   }
   ////* Makes and saves new user ///
-
   // Make new user
   let newUserToCreate = new User({
     userEmail,
@@ -100,7 +93,6 @@ async function signUp(req, res, next) {
     // * Parallel DB processes using session:
     const sess = await mongoose.startSession();
     sess.startTransaction();
-    // TODO Check because it should only add the stack id to userStacks and the whole stack to stacks.
     await userFirstStack.save({ session: sess });
     newUserToCreate.userStacks.push({
       stack_id: firstStackID,
