@@ -4,7 +4,7 @@ const { CheckForInvalidCharacters, CheckInput } = require("../utils/checks");
 const checkChar = jest.fn(CheckForInvalidCharacters);
 const checkIn = jest.fn(CheckInput);
 
-describe("Utilities - Validation", () => {
+describe("Validation", () => {
   checkChar.mockReturnValueOnce(true);
   checkIn.mockReturnValueOnce(true);
   test("Test email validation", () => {
@@ -15,7 +15,7 @@ describe("Utilities - Validation", () => {
   });
 });
 
-describe("Utilities - Counter Test", () => {
+describe("Validation - Counter Test", () => {
   checkChar.mockReturnValueOnce(true);
   checkIn.mockReturnValueOnce(true);
   test("Test email validation", () => {

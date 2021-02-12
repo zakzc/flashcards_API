@@ -1,6 +1,6 @@
 const { CheckForInvalidCharacters, CheckInput } = require("../utils/checks");
 
-describe("Utilities - Checks", () => {
+describe("Checks", () => {
   describe("Check for characters", () => {
     test("Check for invalid input data", () => {
       expect(CheckForInvalidCharacters("wrong!string")).toEqual(false);
