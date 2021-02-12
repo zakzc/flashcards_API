@@ -58,13 +58,6 @@ async function signUp(req, res, next) {
     return next(error);
   }
   // Hashes password
-  // let hashedPsw;
-  // try {
-  //   hashedPsw = await bcrypt.hash(password, 12);
-  // } catch (err) {
-  //   const error = newHttpError("could not create user, please try again", 500);
-  //   return next(error);
-  // }
   let hashedPsw = await hashPsw(password);
   if (hashedPsw === false || !hashedPsw) {
     const error = newHttpError("Problems with password (error 70).", 500);
@@ -121,9 +114,7 @@ async function signUp(req, res, next) {
     const error = new HttpError("Error on token creation", 500);
     return next(error);
   }
-
-  // and return
-  // console.log("Sign up of user: ", newUserToCreate);
+  // Response
   res
     .status(201)
     .json({ user: newUserToCreate, email: userEmail, token: token });
