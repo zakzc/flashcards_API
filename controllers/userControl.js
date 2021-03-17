@@ -131,7 +131,7 @@ async function logIn(req, res, next) {
     return next(error);
   }
   if (!userExists) {
-    console.log("User doesn't exist");
+    // console.log("User doesn't exist");
     const error = new HttpError(
       "Sign up not possible: invalid credentials. Error 137.",
       401
@@ -139,7 +139,7 @@ async function logIn(req, res, next) {
     return next(error);
   }
   let isValidPassword;
-  console.log("received Log in request for: ", userEmail, password);
+  // console.log("received Log in request for: ", userEmail, password);
   try {
     isValidPassword = await bcrypt.compare(password, userExists.password);
     console.log("valid psw");
@@ -165,7 +165,7 @@ async function logIn(req, res, next) {
     const error = new HttpError("Error on Log in. Error 48.", 500);
     return next(error);
   }
-  console.log("Logged In", res);
+  // console.log("Logged In", res);
   res.status(200).json({
     userId: userExists.id,
     email: userExists.userEmail,
