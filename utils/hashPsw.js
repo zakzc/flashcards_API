@@ -7,7 +7,7 @@ async function hashPsw(password) {
   try {
     hashedPsw = await bcrypt.hash(password, 12);
   } catch (err) {
-    const error = new HttpError("could not create user, please try again", 500);
+    const error = new HttpError("Error on password processing", 500);
     return next(error);
   }
   if (hashedPsw) {

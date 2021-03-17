@@ -10,8 +10,9 @@ const userRoutes = require("./routes/userRoutes");
 // model imports
 const HttpError = require("./models/http_error");
 
-// app.use(bodyParser.urlencoded({ extended: false }));
+// const { config } = require("dotenv");
 
+// app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 // Necessary step to avoid CORS error on API requests
@@ -44,14 +45,23 @@ app.use((error, req, res, next) => {
     .json({ message: error.message || "unknown error occurred" });
 });
 
+// config();
+const uri = process.env.MONGO_URL;
+// console.log("uri is: ", uri);
+// console.log("check: ", process.env.MONGO_URL);
+
 mongoose
-  .connect(
-    `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PSW}@cluster0.ybfne.gcp.mongodb.net/${process.env.DB_NAME}?authSource=admin?retryWrites=true&w=majority`,
-    { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true }
-  )
+  .connect(uri, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    useCreateIndex: true,
+  })
   .then(() => {
+    console.log("Server is listening");
     app.listen(process.env.PORT || 5000);
   })
   .catch((err) => {
-    console.log("Connection error (error 56): ", err);
+    console.log("Error trying to connect to MongoDB", err);
   });
+
+//

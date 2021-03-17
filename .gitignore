@@ -55,3 +55,8 @@ typings/
 
 # Keys and credential files
 nodemon.json
+
+# Environment variables
+.ENV
+.ENV-Production
+.ENV-Development

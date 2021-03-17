@@ -14,7 +14,7 @@ const HttpError = require("../models/http_error");
 const Stacks = require("../models/cardsModel");
 const User = require("../models/userModel");
 // Encryption & token
-// const bcrypt = require("bcryptjs");
+const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const sampleStack = require("../data/sampleCards.json");
 
@@ -60,7 +60,7 @@ async function signUp(req, res, next) {
   // Hashes password
   let hashedPsw = await hashPsw(password);
   if (hashedPsw === false || !hashedPsw) {
-    const error = newHttpError("Problems with password (error 70).", 500);
+    const error = newHttpError("Problems with password (error 63).", 500);
     return next(error);
   }
   ////* Makes and saves new user ///
@@ -123,34 +123,38 @@ async function signUp(req, res, next) {
 async function logIn(req, res, next) {
   // get data from req
   const { userEmail, password } = req.body;
-  // console.log("received request: ", userEmail, password);
   let userExists;
   try {
     userExists = await User.findOne({ userEmail: userEmail });
   } catch (err) {
-    const error = new HttpError("Error on user log in. Error 147.", 500);
+    const error = new HttpError("Error on user log in (131).", 500);
     return next(error);
   }
   if (!userExists) {
+    console.log("User doesn't exist");
     const error = new HttpError(
-      "Sign up not possible: invalid credentials. Error 152.",
+      "Sign up not possible: invalid credentials. Error 137.",
       401
     );
     return next(error);
   }
-  let isValidPassword = false;
+  let isValidPassword;
+  console.log("received Log in request for: ", userEmail, password);
   try {
     isValidPassword = await bcrypt.compare(password, userExists.password);
+    console.log("valid psw");
   } catch (err) {
-    const error = new HttpError("Invalid credentials", 500);
+    const error = new HttpError("Invalid credentials (148)", 500);
     return next(error);
   }
 
   if (!isValidPassword) {
-    const error = new HttpError("Invalid credentials", 500);
+    console.log("invalid credentials");
+    const error = new HttpError("Invalid credentials (154)", 500);
     return next(error);
   }
 
+  console.log("tokenize");
   // token -> log in
   let token;
   try {
@@ -161,7 +165,7 @@ async function logIn(req, res, next) {
     const error = new HttpError("Error on Log in. Error 48.", 500);
     return next(error);
   }
-  // console.log("Log In");
+  console.log("Logged In", res);
   res.status(200).json({
     userId: userExists.id,
     email: userExists.userEmail,

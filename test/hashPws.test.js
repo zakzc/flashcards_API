@@ -4,7 +4,7 @@ describe("Password hashing", () => {
   test("Check if hash is returning data.", () => {
     expect.assertions(1);
     const testHash = HashTest("test");
-    const regExHash = new RegExp(/w+/);
+    const regExHash = new RegExp(/S/);
     return expect(testHash).resolves.toMatch(regExHash);
   });
 });
