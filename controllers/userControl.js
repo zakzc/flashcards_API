@@ -142,7 +142,7 @@ async function logIn(req, res, next) {
   // console.log("received Log in request for: ", userEmail, password);
   try {
     isValidPassword = await bcrypt.compare(password, userExists.password);
-    console.log("valid psw");
+    // console.log("valid psw");
   } catch (err) {
     const error = new HttpError("Invalid credentials (148)", 500);
     return next(error);
@@ -154,7 +154,7 @@ async function logIn(req, res, next) {
     return next(error);
   }
 
-  console.log("tokenize");
+  // console.log("tokenize");
   // token -> log in
   let token;
   try {
