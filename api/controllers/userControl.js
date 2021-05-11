@@ -17,11 +17,11 @@ const User = require("../models/userModel");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const sampleStack = require("../data/sampleCards.json");
+const logger = require("../utils/logger");
 
 async function getUserDataByID(req, res, next) {
   const userId = req.params.No;
   let returnUserData;
-  // console.log("Request for data from user");
   try {
     returnUserData = await User.findById(userId);
   } catch (err) {
@@ -97,7 +97,7 @@ async function signUp(req, res, next) {
     //// *
   } catch (err) {
     const error = new HttpError("Error on user Sign up", 500);
-    console.log(
+    logger.error(
       "\n-------- Error: --------- \n",
       err,
       "\n----------------- \n"
@@ -131,7 +131,6 @@ async function logIn(req, res, next) {
     return next(error);
   }
   if (!userExists) {
-    // console.log("User doesn't exist");
     const error = new HttpError(
       "Sign up not possible: invalid credentials. Error 137.",
       401
@@ -139,22 +138,18 @@ async function logIn(req, res, next) {
     return next(error);
   }
   let isValidPassword;
-  // console.log("received Log in request for: ", userEmail, password);
   try {
     isValidPassword = await bcrypt.compare(password, userExists.password);
-    // console.log("valid psw");
   } catch (err) {
     const error = new HttpError("Invalid credentials (148)", 500);
     return next(error);
   }
 
   if (!isValidPassword) {
-    console.log("invalid credentials");
+    logger.info("invalid credentials");
     const error = new HttpError("Invalid credentials (154)", 500);
     return next(error);
   }
-
-  // console.log("tokenize");
   // token -> log in
   let token;
   try {
@@ -165,7 +160,6 @@ async function logIn(req, res, next) {
     const error = new HttpError("Error on Log in. Error 48.", 500);
     return next(error);
   }
-  // console.log("Logged In", res);
   res.status(200).json({
     userId: userExists.id,
     email: userExists.userEmail,

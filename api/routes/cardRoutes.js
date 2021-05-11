@@ -2,20 +2,17 @@
 const express = require("express");
 const router = express.Router();
 const { check } = require("express-validator");
-// model imports
-// const HttpError = require("../models/http_error");
-// controller imports
 const cardControl = require("../controllers/cardControl");
 const checkAuth = require("../middleware/check_auth");
 
-// The checkAuth acts as a guardian. The flow only goes ahead if the token is identified
-// as correct.
-router.use(checkAuth);
-
+// I left this path as open in the API. Anyone can get a stack by its ID.
 router.get("/:No", cardControl.getStackByID);
 
-// Not implemented
-// router.get("/getStacksByUser/:uid", cardControl.getStacksByUser);
+// This function is for test and refactor only. De-habilitated on production.
+// router.get("/getAllStacks", cardControl.getAllStacks);
+
+// Flow only goes ahead if the token is identified as correct.
+router.use(checkAuth);
 
 router.post(
   "/addNewStack",

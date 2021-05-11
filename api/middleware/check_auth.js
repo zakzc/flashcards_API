@@ -1,5 +1,6 @@
 const HttpError = require("../models/http_error");
 const jwt = require("jsonwebtoken");
+const logger = require("../utils/logger");
 
 module.exports = (req, res, next) => {
   // Options is a std browser method, activated on anything other than GET
@@ -16,10 +17,9 @@ module.exports = (req, res, next) => {
     }
     const decodedToken = jwt.verify(token, process.env.JWT_KEY);
     req.userData = { userId: decodedToken.userId };
-    // console.log("Authorized");
     next();
   } catch (err) {
-    console.log("NOT authorized");
+    logger.error("NOT authorized");
     const error = new HttpError("Authentication failed (error 21).", 401);
     return next(error);
   }

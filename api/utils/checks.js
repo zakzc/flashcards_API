@@ -26,7 +26,6 @@ exports.CheckForInvalidCharacters = (dataToCheck) => {
   ];
   let invalidInput = invalidCharacters.map((c) => dataToCheck.includes(c));
   if (invalidInput.includes(true)) {
-    // console.log("wrong input");
     return false;
   } else {
     return true;
