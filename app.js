@@ -5,12 +5,12 @@ const app = express();
 // DB module
 const mongoose = require("mongoose");
 // file imports
-const cardRoutes = require("./routes/cardRoutes");
-const userRoutes = require("./routes/userRoutes");
+const cardRoutes = require("./api/routes/cardRoutes");
+const userRoutes = require("./api/routes/userRoutes");
 // model imports
-const HttpError = require("./models/http_error");
+const HttpError = require("./api/models/http_error");
 
-// const { config } = require("dotenv");
+require("./api/startUp/db_connection")(app);
 
 // app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -46,22 +46,22 @@ app.use((error, req, res, next) => {
 });
 
 // config();
-const uri = process.env.MONGO_URL;
+// const uri = process.env.MONGO_URL;
 // console.log("uri is: ", uri);
 // console.log("check: ", process.env.MONGO_URL);
 
-mongoose
-  .connect(uri, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    useCreateIndex: true,
-  })
-  .then(() => {
-    console.log("Server is listening");
-    app.listen(process.env.PORT || 5000);
-  })
-  .catch((err) => {
-    console.log("Error trying to connect to MongoDB", err);
-  });
+// mongoose
+//   .connect(uri, {
+//     useNewUrlParser: true,
+//     useUnifiedTopology: true,
+//     useCreateIndex: true,
+//   })
+//   .then(() => {
+//     console.log("Server is listening");
+//     app.listen(process.env.PORT || 5000);
+//   })
+//   .catch((err) => {
+//     console.log("Error trying to connect to MongoDB", err);
+//   });
 
 //
